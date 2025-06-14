@@ -1,0 +1,7 @@
+name: InfinityTowerPlugin
+version: '1.0-SNAPSHOT'
+main: com.popogonry.infinityTowerPlugin.InfinityTowerPlugin
+api-version: '1.21'
+
+commands:
+  it:
