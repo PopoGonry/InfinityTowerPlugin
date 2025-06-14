@@ -41,11 +41,13 @@ public class InfinityTower implements ConfigurationSerializable {
 
     public static InfinityTower deserialize(Map<String, Object> map) {
         List<Number> spawnList = (List<Number>) map.get("spawnLocation");
-        double[] spawnLocation = new double[spawnList.size()];
-        for (int i = 0; i < spawnList.size(); i++) {
-            spawnLocation[i] = spawnList.get(i).doubleValue();
+        double[] spawnLocation = null;
+        if(spawnList != null) {
+            spawnLocation = new double[spawnList.size()];
+            for (int i = 0; i < spawnList.size(); i++) {
+                spawnLocation[i] = spawnList.get(i).doubleValue();
+            }
         }
-
         return new InfinityTower(
                 UUID.fromString(map.get("id").toString()),
                 (String) map.get("name"),
@@ -54,6 +56,18 @@ public class InfinityTower implements ConfigurationSerializable {
                 (boolean) map.get("isWorking"),
                 (List<ItemStack>) map.get("rewardList")
         );
+    }
+
+    @Override
+    public String toString() {
+        return "InfinityTower{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", area=" + area +
+                ", spawnLocation=" + Arrays.toString(spawnLocation) +
+                ", isWorking=" + isWorking +
+                ", rewardList=" + rewardList +
+                '}';
     }
 
     public UUID getId() {

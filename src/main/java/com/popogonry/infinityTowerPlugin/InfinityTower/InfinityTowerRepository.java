@@ -71,4 +71,26 @@ public class InfinityTowerRepository {
     public void removeInfinityTowerSet() {
         setDataConfig.removeInfinityTowerSet();
     }
+
+    public void storeAllInfinityTower() {
+        for (UUID uuid : infinityTowerHashMap.keySet()) {
+            storeInfinityTower(uuid);
+        }
+        storeInfinityTowerSet();
+    }
+
+    public void saveAllInfinityTower() {
+        for (UUID uuid : infinityTowerHashMap.keySet()) {
+            saveInfinityTower(uuid);
+        }
+        saveInfinityTowerSet();
+    }
+
+    public void loadAllInfinityTower() {
+        loadInfinityTowerSet();
+        for (UUID uuid : infinityTowerUUIDSet) {
+            loadInfinityTower(uuid);
+        }
+    }
+
 }

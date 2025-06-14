@@ -78,4 +78,25 @@ public class MonsterRepository {
     public void removeMonsterSet() {
         setDataConfig.removeMonsterSet();
     }
+
+    public void storeAllMonster() {
+        for (UUID uuid : monsterHashMap.keySet()) {
+            storeMonster(uuid);
+        }
+        storeMonsterSet();
+    }
+
+    public void saveAllMonster() {
+        for (UUID uuid : monsterHashMap.keySet()) {
+            saveMonster(uuid);
+        }
+        saveMonsterSet();
+    }
+
+    public void loadAllMonster() {
+        loadMonsterSet();
+        for (UUID uuid : monsterUUIDSet) {
+            loadMonster(uuid);
+        }
+    }
 }

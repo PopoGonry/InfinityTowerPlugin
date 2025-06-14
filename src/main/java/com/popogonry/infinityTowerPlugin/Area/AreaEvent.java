@@ -19,6 +19,9 @@ public class AreaEvent implements Listener {
 
     @EventHandler
     public void onAreaSettingEvent(PlayerInteractEvent event) {
+
+        if(event.getPlayer().getItemInHand().getType() == Material.AIR) return;
+
         if (event.getPlayer().getItemInHand().getItemMeta().getDisplayName().equals(areaService.getAreaSettingTool().getItemMeta().getDisplayName())
                 && AreaRepository.playerAreaSettingModeHashMap.getOrDefault(event.getPlayer(), false)) {
 
@@ -47,12 +50,14 @@ public class AreaEvent implements Listener {
 
                 if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     area.setLocation1(location);
-                    player.sendMessage(Reference.prefix + "첫번째 좌표: " + location[0] + ", " + location[1] + ", " + location[2]);
+                    player.sendMessage(Reference.prefix_normal + "첫번째 좌표: " + location[0] + ", " + location[1] + ", " + location[2]);
 
                 } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     area.setLocation2(location);
-                    player.sendMessage(Reference.prefix + "두번째 좌표: " + location[0] + ", " + location[1] + ", " + location[2]);
+                    player.sendMessage(Reference.prefix_normal + "두번째 좌표: " + location[0] + ", " + location[1] + ", " + location[2]);
                 }
+
+                AreaRepository.playerAreaHashMap.put(player, area);
 
 //                player.sendMessage(area.toString());
             }
