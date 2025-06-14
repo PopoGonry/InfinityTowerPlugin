@@ -7,37 +7,76 @@ import java.util.*;
 
 public class MonsterService {
 
-    public List<Monster> calculateRoundMonster(int round) {
+    private final Random rand = new Random();
+    public List<List<Monster>> getSpawnMonsters(int round) {
+        int roundScore = getRoundScore(round);
 
+        List<List<Monster>> spawnMonsters = new ArrayList<>();
+
+
+        int score = 0;
+
+
+        boolean isScoreRemained = true;
+        while (isScoreRemained && roundScore > 0) {
+            List<Monster> monsters = new ArrayList<>();
+            for (int i = 0; i < PluginRepository.pluginConfig.getOneTimeMobSpawnNumber(); i++) {
+                Monster monster = calculateRoundMonster(round, roundScore);
+                if(monster == null) {
+                    isScoreRemained = false;
+                    break;
+                }
+                monsters.add(monster);
+                score++;
+                roundScore -= monster.getScore();
+            }
+            if(!monsters.isEmpty()) spawnMonsters.add(monsters);
+        }
+        System.out.println("총 몬스터 수: " + score);
+
+        return spawnMonsters;
+    }
+
+    public Monster calculateRoundMonster(int round, int score) {
         Set<Monster> spawnableMonstersByRound = getSpawnableMonstersByRound(round);
 
-
-        int monsterTotalScore = 0;
+        Set<Monster> spawnableMonstersByScore = new HashSet<>();
         for (Monster monster : spawnableMonstersByRound) {
-            monsterTotalScore += monster.getScore();
+            if(monster.getScore() <= score && monster.getScore() > 0) spawnableMonstersByScore.add(monster);
         }
 
-        int roundScore = getRoundScore(round);
+        if(spawnableMonstersByScore.isEmpty()) return null;
+
+        int monsterTotalScore = 0;
+        for (Monster monster : spawnableMonstersByScore) {
+            monsterTotalScore += monster.getScore();
+        }
 
         HashMap<Monster, Integer> monsterMinPercent = new HashMap<>();
         HashMap<Monster, Integer> monsterMaxPercent = new HashMap<>();
 
         int percentInt = 0;
-        for (Monster monster : spawnableMonstersByRound) {
+        int total = 10000;
+        int count = 0;
+        for (Monster monster : spawnableMonstersByScore) {
             monsterMinPercent.put(monster, percentInt + 1);
-            int max = monster.getScore() * 10000 / monsterTotalScore + percentInt;
+            int max = ++count == spawnableMonstersByScore.size() ? total : monster.getScore() * total / monsterTotalScore + percentInt;
             percentInt = max;
             monsterMaxPercent.put(monster, max);
         }
 
-        for (Monster monster : spawnableMonstersByRound) {
-            System.out.println(monsterMinPercent.get(monster) + " " + monsterMaxPercent.get(monster));
+        for (int attempt = 0; attempt < 100; attempt++) {
+            int randomInt = rand.nextInt(10000) + 1;
+            for (Monster monster : spawnableMonstersByScore) {
+                // 확률 값에 포함 되는 몬스터면,
+                if(monsterMinPercent.get(monster) <= randomInt && randomInt <= monsterMaxPercent.get(monster)) {
+                    return monster;
+                }
+            }
         }
-
-
-
         return null;
     }
+
 
     public int getRoundScore(int round) {
         if(round == 1) {

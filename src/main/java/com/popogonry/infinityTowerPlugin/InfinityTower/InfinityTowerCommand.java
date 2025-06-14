@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class InfinityTowerCommand implements CommandExecutor {
@@ -60,7 +61,11 @@ public class InfinityTowerCommand implements CommandExecutor {
 
             }if(args[0].equalsIgnoreCase("test2")) {
                 MonsterService monsterService = new MonsterService();
-                monsterService.calculateRoundMonster(10);
+
+//                Monster monster = monsterService.calculateRoundMonster(10, 100);
+                List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(10);
+
+                System.out.println(spawnMonsters);
             }
             else if(args[0].equalsIgnoreCase("load")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
@@ -159,6 +164,15 @@ public class InfinityTowerCommand implements CommandExecutor {
                 } catch (NameNotFoundException e) {
                     sender.sendMessage(e.getMessage());
                 }
+            }
+            if(args[0].equalsIgnoreCase("test3")) {
+                MonsterService monsterService = new MonsterService();
+
+//                Monster monster = monsterService.calculateRoundMonster(10, 100);
+//                List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(10);
+                Monster monster = monsterService.calculateRoundMonster(10, Integer.parseInt(args[1]));
+
+                System.out.println(monster);
             }
 
         }

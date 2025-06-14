@@ -14,7 +14,9 @@ public class PluginDataConfig extends Config {
         return new PluginConfig(
                 this.getConfig().getInt("Round-Score"),
                 this.getConfig().getInt("Round-Clear-Seconds"),
-                this.getConfig().getStringList("Allowed-Commands")
+                this.getConfig().getStringList("Allowed-Commands"),
+                this.getConfig().getInt("One-Time-Mob-Spawn-Number"),
+                this.getConfig().getInt("Mob-Spawn-Delay-Seconds")
         );
     }
 
