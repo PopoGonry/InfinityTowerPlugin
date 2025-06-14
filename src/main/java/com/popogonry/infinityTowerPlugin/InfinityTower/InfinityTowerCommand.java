@@ -7,12 +7,16 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.NameNotFoundExc
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.UUIDAlreadyExistsException;
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
+import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.Reference;
+import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -43,62 +47,48 @@ public class InfinityTowerCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("test")) {
                 UUID uuid = UUID.randomUUID();
 
-                double[] location = new double[3];
-                location[0] = player.getLocation().getX();
-                location[1] = player.getLocation().getY();
-                location[2] = player.getLocation().getZ();
+                ArrayList<Integer> list = new ArrayList<>();
+                for (int i = 1; i <= 10; i++) {
+                    list.add(i);
+                }
 
-                InfinityTowerRepository.infinityTowerHashMap.put(uuid,
-                        new InfinityTower(uuid, "name", new Area(player.getWorld().getName(), location, location), location, true, new ArrayList<>()));
+                for(int i = 1; i <= 5; i++) {
+                    uuid = UUID.randomUUID();
+                    MonsterRepository.monsterHashMap.put(uuid, new Monster(uuid, "name" + i, false, 30 * i, list));
+                    MonsterRepository.monsterUUIDSet.add(uuid);
+                }
 
-                InfinityTowerRepository.infinityTowerUUIDSet.add(uuid);
-
-                uuid = UUID.randomUUID();
-
-                MonsterRepository.monsterHashMap.put(uuid, new Monster(uuid, "name", true, 10, new ArrayList<>()));
-                MonsterRepository.monsterUUIDSet.add(uuid);
-
+            }if(args[0].equalsIgnoreCase("test2")) {
+                MonsterService monsterService = new MonsterService();
+                monsterService.calculateRoundMonster(10);
             }
             else if(args[0].equalsIgnoreCase("load")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
-                infinityTowerRepository.loadInfinityTowerSet();
-                for (UUID uuid : InfinityTowerRepository.infinityTowerUUIDSet) {
-                    infinityTowerRepository.loadInfinityTower(uuid);
-                }
+                infinityTowerRepository.loadAllInfinityTower();
 
                 MonsterRepository monsterRepository = new MonsterRepository();
                 monsterRepository.loadMonsterSet();
-                for (UUID uuid : MonsterRepository.monsterUUIDSet) {
-                    monsterRepository.loadMonster(uuid);
-                }
+
+                RewardRepository rewardRepository = new RewardRepository();
+                rewardRepository.loadAllReward();
             }
             else if(args[0].equalsIgnoreCase("save")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
-                for (UUID uuid : InfinityTowerRepository.infinityTowerUUIDSet) {
-                    infinityTowerRepository.saveInfinityTower(uuid);
-                }
-                infinityTowerRepository.saveInfinityTowerSet();
+                infinityTowerRepository.saveAllInfinityTower();
 
                 MonsterRepository monsterRepository = new MonsterRepository();
-                for (UUID uuid : MonsterRepository.monsterUUIDSet) {
-                    monsterRepository.saveMonster(uuid);
-                }
-                monsterRepository.saveMonsterSet();
-            }
-            else if(args[0].equalsIgnoreCase("store")) {
-                InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
-                for (UUID uuid : InfinityTowerRepository.infinityTowerUUIDSet) {
-                    infinityTowerRepository.storeInfinityTower(uuid);
-                }
-                infinityTowerRepository.storeInfinityTowerSet();
+                monsterRepository.saveAllMonster();
 
-                MonsterRepository monsterRepository = new MonsterRepository();
-                for (UUID uuid : MonsterRepository.monsterUUIDSet) {
-                    monsterRepository.storeMonster(uuid);
-                }
-                monsterRepository.storeMonsterSet();
+                RewardRepository rewardRepository = new RewardRepository();
+                rewardRepository.saveAllReward();
             }
+//            else if(args[0].equalsIgnoreCase("store")) {
+//
+//            }
             else if (args[0].equalsIgnoreCase("list")) {
+
+                player.sendMessage(MonsterRepository.monsterHashMap.values().toString());
+                player.sendMessage(MonsterRepository.monsterUUIDSet.toString());
 
                 infinityTowerService.printInfinityTowers(sender);
 
@@ -124,14 +114,14 @@ public class InfinityTowerCommand implements CommandExecutor {
 
             if(args[0].equalsIgnoreCase("create")) {
                 try {
-                    infinityTowerService.createInfinityTower(args[1], null, null, null);
+                    infinityTowerService.createInfinityTower(args[1], null, null);
                 } catch (UUIDAlreadyExistsException e) {
                     sender.sendMessage(e.getMessage());
                 }
             }
             else if(args[0].equalsIgnoreCase("areaSet")) {
                 try {
-                    infinityTowerService.updateInfinityTower(args[1], AreaRepository.playerAreaHashMap.getOrDefault(player, null), null, null);
+                    infinityTowerService.updateInfinityTower(args[1], AreaRepository.playerAreaHashMap.getOrDefault(player, null), null);
                 } catch (NameNotFoundException e) {
                     sender.sendMessage(e.getMessage());
                 }
@@ -143,7 +133,7 @@ public class InfinityTowerCommand implements CommandExecutor {
                 location[2] = player.getLocation().getZ();
 
                 try {
-                    infinityTowerService.updateInfinityTower(args[1], null, location, null);
+                    infinityTowerService.updateInfinityTower(args[1], null, location);
                 } catch (NameNotFoundException e) {
                     sender.sendMessage(e.getMessage());
                 }

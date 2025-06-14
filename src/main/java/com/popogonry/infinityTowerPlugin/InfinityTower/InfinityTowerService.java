@@ -15,7 +15,8 @@ import java.util.UUID;
 public class InfinityTowerService {
 
 
-    public InfinityTower createInfinityTower(String name, Area area, double[] spawnLocation, List<ItemStack> rewardList) {
+
+    public InfinityTower createInfinityTower(String name, Area area, double[] spawnLocation) {
         UUID uuid;
         try {
             uuid = nameToUUID(name);
@@ -27,7 +28,7 @@ public class InfinityTowerService {
             throw new UUIDAlreadyExistsException(uuid);
         }
 
-        InfinityTower infinityTower = new InfinityTower(uuid, name, area, spawnLocation, false, rewardList);
+        InfinityTower infinityTower = new InfinityTower(uuid, name, area, spawnLocation, false);
 
         InfinityTowerRepository.infinityTowerHashMap.put(uuid, infinityTower);
         InfinityTowerRepository.infinityTowerUUIDSet.add(uuid);
@@ -39,7 +40,7 @@ public class InfinityTowerService {
         return infinityTower;
     }
 
-    public InfinityTower updateInfinityTower(String name, Area area, double[] spawnLocation, List<ItemStack> rewardList) throws NameNotFoundException {
+    public InfinityTower updateInfinityTower(String name, Area area, double[] spawnLocation) throws NameNotFoundException {
         UUID uuid;
         uuid = nameToUUID(name);
 
@@ -47,7 +48,6 @@ public class InfinityTowerService {
 
         infinityTower.setArea(area == null ? infinityTower.getArea() : area);
         infinityTower.setSpawnLocation(spawnLocation == null ? infinityTower.getSpawnLocation() : spawnLocation);
-        infinityTower.setRewardList(rewardList == null ? infinityTower.getRewardList() : rewardList);
 
         infinityTower.setWorking(false);
 

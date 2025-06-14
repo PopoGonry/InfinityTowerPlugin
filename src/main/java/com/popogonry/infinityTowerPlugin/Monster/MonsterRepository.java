@@ -70,7 +70,7 @@ public class MonsterRepository {
     }
 
     public void loadMonsterSet() {
-        Set<UUID> set = setDataConfig.loadMonsterSet();
+        Set<UUID> set = new HashSet<>(setDataConfig.loadMonsterSet());
         monsterUUIDSet.clear();
         monsterUUIDSet.addAll(set);
     }
@@ -80,7 +80,8 @@ public class MonsterRepository {
     }
 
     public void storeAllMonster() {
-        for (UUID uuid : monsterHashMap.keySet()) {
+        Set<UUID> uuids = new HashSet<>(monsterHashMap.keySet());
+        for (UUID uuid : uuids) {
             storeMonster(uuid);
         }
         storeMonsterSet();

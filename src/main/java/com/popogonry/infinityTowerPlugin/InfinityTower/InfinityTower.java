@@ -14,15 +14,13 @@ public class InfinityTower implements ConfigurationSerializable {
     private Area area;
     private double[] spawnLocation;
     private boolean isWorking;
-    private List<ItemStack> rewardList;
 
-    public InfinityTower(UUID id, String name, Area area, double[] spawnLocation, boolean isWorking, List<ItemStack> rewardList) {
+    public InfinityTower(UUID id, String name, Area area, double[] spawnLocation, boolean isWorking) {
         this.id = id;
         this.name = name;
         this.area = area;
         this.spawnLocation = spawnLocation;
         this.isWorking = isWorking;
-        this.rewardList = rewardList;
     }
 
     @Override
@@ -34,7 +32,6 @@ public class InfinityTower implements ConfigurationSerializable {
         map.put("area", area);
         map.put("spawnLocation", spawnLocation);
         map.put("isWorking", isWorking);
-        map.put("rewardList", rewardList);
 
         return map;
     }
@@ -53,8 +50,7 @@ public class InfinityTower implements ConfigurationSerializable {
                 (String) map.get("name"),
                 (Area) map.get("area"),
                 spawnLocation,
-                (boolean) map.get("isWorking"),
-                (List<ItemStack>) map.get("rewardList")
+                (boolean) map.get("isWorking")
         );
     }
 
@@ -66,7 +62,6 @@ public class InfinityTower implements ConfigurationSerializable {
                 ", area=" + area +
                 ", spawnLocation=" + Arrays.toString(spawnLocation) +
                 ", isWorking=" + isWorking +
-                ", rewardList=" + rewardList +
                 '}';
     }
 
@@ -108,13 +103,5 @@ public class InfinityTower implements ConfigurationSerializable {
 
     public void setWorking(boolean working) {
         isWorking = working;
-    }
-
-    public List<ItemStack> getRewardList() {
-        return rewardList;
-    }
-
-    public void setRewardList(List<ItemStack> rewardList) {
-        this.rewardList = rewardList;
     }
 }

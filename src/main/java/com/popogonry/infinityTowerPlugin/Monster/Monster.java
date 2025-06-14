@@ -30,7 +30,7 @@ public class Monster implements ConfigurationSerializable {
         map.put("name", name);
         map.put("isMysticMob", isMysticMob);
         map.put("score", score);
-        map.put("roundList", roundList);
+        map.put("roundList", compress(roundList));
         return map;
     }
 
@@ -40,9 +40,61 @@ public class Monster implements ConfigurationSerializable {
         boolean isMysticMob = (boolean) map.get("isMysticMob");
         int score = (int) map.get("score");
 
-        List<Integer> roundList = (List<Integer>) map.get("roundList");
+        List<Integer> roundList = decompress(map.get("roundList")); // ✔ 안전하게 처리
 
         return new Monster(id, name, isMysticMob, score, roundList);
+    }
+
+    private static List<String> compress(List<Integer> numbers) {
+        Collections.sort(numbers);
+        List<String> result = new ArrayList<>();
+
+        int start = numbers.get(0);
+        int prev = start;
+
+        for (int i = 1; i < numbers.size(); i++) {
+            int current = numbers.get(i);
+            if (current != prev + 1) {
+                result.add(start == prev ? String.valueOf(start) : start + "..." + prev);
+                start = current;
+            }
+            prev = current;
+        }
+
+        result.add(start == prev ? String.valueOf(start) : start + "..." + prev);
+        return result;
+    }
+
+    public static List<Integer> decompress(Object listObj) {
+        List<Integer> result = new ArrayList<>();
+
+        for (Object obj : (List<?>) listObj) {
+            String s = String.valueOf(obj); // ← 여기서 Integer, String 구분 없이 처리
+            if (s.contains("...")) {
+                String[] parts = s.split("\\.\\.\\.");
+                int start = Integer.parseInt(parts[0]);
+                int end = Integer.parseInt(parts[1]);
+                for (int i = start; i <= end; i++) {
+                    result.add(i);
+                }
+            } else {
+                result.add(Integer.parseInt(s));
+            }
+        }
+
+        return result;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Monster{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isMysticMob=" + isMysticMob +
+                ", score=" + score +
+                ", roundList=" + roundList +
+                '}';
     }
 
     public UUID getId() {

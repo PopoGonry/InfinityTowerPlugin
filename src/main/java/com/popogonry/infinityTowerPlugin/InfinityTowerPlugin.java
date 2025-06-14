@@ -7,6 +7,7 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTowerCommand;
 import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTowerRepository;
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
+import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -22,6 +23,8 @@ public final class InfinityTowerPlugin extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         serverInstance = this;
+        saveDefaultConfig();
+
 
         ConfigurationSerialization.registerClass(InfinityTower.class);
         ConfigurationSerialization.registerClass(Area.class);
@@ -32,8 +35,14 @@ public final class InfinityTowerPlugin extends JavaPlugin {
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Load Start...");
 
+        PluginRepository pluginRepository = new PluginRepository();
+        pluginRepository.loadPluginDataConfig();
+
         InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
         infinityTowerRepository.loadAllInfinityTower();
+
+        RewardRepository rewardRepository = new RewardRepository();
+        rewardRepository.loadAllReward();
 
         MonsterRepository monsterRepository = new MonsterRepository();
         monsterRepository.loadAllMonster();
@@ -57,6 +66,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
 
         MonsterRepository monsterRepository = new MonsterRepository();
         monsterRepository.storeAllMonster();
+
+        RewardRepository rewardRepository = new RewardRepository();
+        rewardRepository.storeAllReward();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Store Complete!");
 

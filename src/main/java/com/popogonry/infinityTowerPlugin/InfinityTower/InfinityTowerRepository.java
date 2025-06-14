@@ -4,13 +4,9 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.DataConfig.InfinityTowerD
 import com.popogonry.infinityTowerPlugin.InfinityTower.DataConfig.InfinityTowerSetDataConfig;
 import com.popogonry.infinityTowerPlugin.InfinityTowerPlugin;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class InfinityTowerRepository {
-
     private static final String INFINITY_TOWER_FILE_NAME = "infinityTower.yml";
     private static final String INFINITY_TOWER_SET_FILE_NAME = "infinityTowerSet.yml";
 
@@ -18,9 +14,11 @@ public class InfinityTowerRepository {
     private final InfinityTowerDataConfig dataConfig;
     private final InfinityTowerSetDataConfig setDataConfig;
 
+
     public static final HashMap<UUID, InfinityTower> infinityTowerHashMap = new HashMap<UUID, InfinityTower>();
     public static final Set<UUID> infinityTowerUUIDSet = new HashSet<>();
 
+    public static final HashMap<Integer, Integer> infinityTowerRoundScoreHashMap = new HashMap<>();
 
     public InfinityTowerRepository() {
         this.configBasePath = InfinityTowerPlugin.getServerInstance().getDataFolder().getAbsolutePath();
@@ -73,7 +71,8 @@ public class InfinityTowerRepository {
     }
 
     public void storeAllInfinityTower() {
-        for (UUID uuid : infinityTowerHashMap.keySet()) {
+        Set<UUID> uuids = new HashSet<>(infinityTowerHashMap.keySet());
+        for (UUID uuid : uuids) {
             storeInfinityTower(uuid);
         }
         storeInfinityTowerSet();
@@ -92,5 +91,8 @@ public class InfinityTowerRepository {
             loadInfinityTower(uuid);
         }
     }
+
+
+
 
 }
