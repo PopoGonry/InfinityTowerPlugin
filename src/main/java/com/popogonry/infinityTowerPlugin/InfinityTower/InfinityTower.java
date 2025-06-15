@@ -56,12 +56,10 @@ public class InfinityTower implements ConfigurationSerializable {
 
     @Override
     public String toString() {
-        return "InfinityTower{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", area=" + area +
-                ", spawnLocation=" + Arrays.toString(spawnLocation) +
-                ", isWorking=" + isWorking +
+        return "이름: '" + name + '\'' +
+                ", 영역: " + area +
+                ", 스폰 좌표: " + Arrays.toString(spawnLocation) +
+                ", 활성화 여부: " + isWorking +
                 '}';
     }
 

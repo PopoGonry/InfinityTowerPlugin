@@ -5,7 +5,7 @@ import com.popogonry.infinityTowerPlugin.Reference;
 import java.util.UUID;
 
 public class UUIDNotFoundException extends RuntimeException {
-    public UUIDNotFoundException(UUID uuid) {
-        super(Reference.prefix_exception + uuid.toString() + " not found");
+    public UUIDNotFoundException(String message) {
+        super(message);
     }
 }

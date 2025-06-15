@@ -8,6 +8,7 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.UUIDAlreadyExis
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
+import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import org.bukkit.Bukkit;
@@ -166,13 +167,11 @@ public class InfinityTowerCommand implements CommandExecutor {
                 }
             }
             if(args[0].equalsIgnoreCase("test3")) {
-                MonsterService monsterService = new MonsterService();
+                InfinityTowerProcess infinityTowerProcess = new InfinityTowerProcess(player, InfinityTowerRepository.infinityTowerHashMap.get(infinityTowerService.nameToUUID(args[1])));
+                infinityTowerProcess.start();
 
-//                Monster monster = monsterService.calculateRoundMonster(10, 100);
-//                List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(10);
-//                Monster monster = monsterService.calculateRoundMonster(10, Integer.parseInt(args[1]));
 
-//                System.out.println(monster);
+                player.sendMessage(PluginRepository.pluginConfig.getAllowedCommands().toString());
             }
 
         }

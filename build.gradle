@@ -75,9 +75,9 @@ processResources {
 // 자취방
 
 jar {
-    archiveFileName = 'CommandItemPlugin.jar'
+    archiveFileName = 'InfinityTower.jar'
     destinationDirectory = file("C:\\Users\\rhtjd\\바탕 화면\\마인크래프트 플러그인 개발\\1.21.1\\plugins")
     manifest {
-        attributes 'Main-Class': 'com.popogonry.commandItemPlugin.CommandItemPlugin'
+        attributes 'Main-Class': 'com.popogonry.infinityTowerPlugin.InfinityTowerPlugin'
     }
 }

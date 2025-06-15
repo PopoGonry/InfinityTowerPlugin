@@ -18,17 +18,17 @@ public class MonsterService {
     private final Random rand = new Random();
 
 
-    public static EntityType getMonsterByName(String mobName) {
+    public EntityType getMonsterByName(String mobName) {
 
         EntityType type;
         try {
             type = EntityType.valueOf(mobName.toUpperCase());
-        } catch (MonsterNotFoundException e) {
-            return null;
+        } catch (IllegalArgumentException e) {
+            throw new MonsterNotFoundException(mobName);
         }
 
         if (!type.isSpawnable() || !type.isAlive()) {
-            return null;
+            throw new MonsterNotFoundException(mobName);
         }
 
         return type;
@@ -112,10 +112,6 @@ public class MonsterService {
 
         List<List<Monster>> spawnMonsters = new ArrayList<>();
 
-
-        int score = 0;
-
-
         boolean isScoreRemained = true;
         while (isScoreRemained && roundScore > 0) {
             List<Monster> monsters = new ArrayList<>();
@@ -126,12 +122,10 @@ public class MonsterService {
                     break;
                 }
                 monsters.add(monster);
-                score++;
                 roundScore -= monster.getScore();
             }
             if(!monsters.isEmpty()) spawnMonsters.add(monsters);
         }
-        System.out.println("총 몬스터 수: " + score);
 
         return spawnMonsters;
     }

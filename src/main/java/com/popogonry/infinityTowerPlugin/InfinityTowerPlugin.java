@@ -2,9 +2,7 @@ package com.popogonry.infinityTowerPlugin;
 
 import com.popogonry.infinityTowerPlugin.Area.Area;
 import com.popogonry.infinityTowerPlugin.Area.AreaEvent;
-import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTower;
-import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTowerCommand;
-import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTowerRepository;
+import com.popogonry.infinityTowerPlugin.InfinityTower.*;
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
@@ -31,7 +29,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(Monster.class);
 
         getServer().getPluginManager().registerEvents(new AreaEvent(), this);
+        getServer().getPluginManager().registerEvents(new InfinityTowerEvent(), this);
         getServer().getPluginCommand("it").setExecutor(new InfinityTowerCommand());
+        getServer().getPluginCommand("무한의탑").setExecutor(new InfinityTowerKoreanCommand());
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Load Start...");
 
@@ -58,6 +58,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
 
+        for (InfinityTowerProcess value : InfinityTowerRepository.infinityTowerPlayerHashMap.values()) {
+            value.stop();
+        }
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Store Start...");
 

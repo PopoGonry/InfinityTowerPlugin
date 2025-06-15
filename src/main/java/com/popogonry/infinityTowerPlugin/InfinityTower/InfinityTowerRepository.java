@@ -3,6 +3,7 @@ package com.popogonry.infinityTowerPlugin.InfinityTower;
 import com.popogonry.infinityTowerPlugin.InfinityTower.DataConfig.InfinityTowerDataConfig;
 import com.popogonry.infinityTowerPlugin.InfinityTower.DataConfig.InfinityTowerSetDataConfig;
 import com.popogonry.infinityTowerPlugin.InfinityTowerPlugin;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -19,6 +20,8 @@ public class InfinityTowerRepository {
     public static final Set<UUID> infinityTowerUUIDSet = new HashSet<>();
 
     public static final HashMap<Integer, Integer> infinityTowerRoundScoreHashMap = new HashMap<>();
+
+    public static final HashMap<Player, InfinityTowerProcess> infinityTowerPlayerHashMap = new HashMap<>();
 
     public InfinityTowerRepository() {
         this.configBasePath = InfinityTowerPlugin.getServerInstance().getDataFolder().getAbsolutePath();
