@@ -1,13 +1,112 @@
 package com.popogonry.infinityTowerPlugin.Monster;
 
+import com.popogonry.infinityTowerPlugin.Area.Area;
 import com.popogonry.infinityTowerPlugin.InfinityTower.InfinityTowerRepository;
+import com.popogonry.infinityTowerPlugin.Monster.Exception.MonsterNotFoundException;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 
 import java.util.*;
 
 public class MonsterService {
 
     private final Random rand = new Random();
+
+
+    public static EntityType getMonsterByName(String mobName) {
+
+        EntityType type;
+        try {
+            type = EntityType.valueOf(mobName.toUpperCase());
+        } catch (MonsterNotFoundException e) {
+            return null;
+        }
+
+        if (!type.isSpawnable() || !type.isAlive()) {
+            return null;
+        }
+
+        return type;
+    }
+
+
+    public Location getMonsterSpawnLocationInArea(Area area) {
+        World world = Bukkit.getWorld(area.getWorldName());
+        if (world == null || !area.isComplete()) return null;
+
+        double minX = Math.min(area.getLocation1()[0], area.getLocation2()[0]);
+        double maxX = Math.max(area.getLocation1()[0], area.getLocation2()[0]);
+
+        double minY = Math.min(area.getLocation1()[1], area.getLocation2()[1]);
+        double maxY = Math.max(area.getLocation1()[1], area.getLocation2()[1]);
+
+        double minZ = Math.min(area.getLocation1()[2], area.getLocation2()[2]);
+        double maxZ = Math.max(area.getLocation1()[2], area.getLocation2()[2]);
+
+        Random random = new Random();
+        int attempts = 0;
+        int maxAttempts = 1000;
+
+        while (attempts++ < maxAttempts) {
+            int x = (int) (minX + random.nextInt((int) (maxX - minX - 1)));
+            int z = (int) (minZ + random.nextInt((int) (maxZ - minZ - 1)));
+            int initialY = (int) (minY + random.nextInt((int) (maxY - minY - 3)));
+
+            // Y 아래로 내려가며 가장 가까운 solid 발판 찾기
+            int baseY = -1;
+            for (int y = initialY; y >= minY + 1; y--) {
+                Block centerBlock = world.getBlockAt(x + 1, y - 1, z + 1); // 중심 위치 바닥
+                if (centerBlock.getType().isSolid()) {
+                    baseY = y;
+                    break;
+                }
+            }
+
+            if (baseY == -1) continue;
+
+            // 3x3 발판 체크
+            boolean hasSolidFloor = true;
+            for (int dx = 0; dx < 3; dx++) {
+                for (int dz = 0; dz < 3; dz++) {
+                    Block block = world.getBlockAt(x + dx, baseY - 1, z + dz);
+                    if (!block.getType().isSolid()) {
+                        hasSolidFloor = false;
+                        break;
+                    }
+                }
+                if (!hasSolidFloor) break;
+            }
+            if (!hasSolidFloor) continue;
+
+            // 위 3x3 공간 비어 있는지 확인
+            boolean isEmpty = true;
+            for (int dx = 0; dx < 3; dx++) {
+                for (int dz = 0; dz < 3; dz++) {
+                    for (int dy = 0; dy < 3; dy++) {
+                        Block block = world.getBlockAt(x + dx, baseY + dy, z + dz);
+                        if (!block.isEmpty()) {
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+                    if (!isEmpty) break;
+                }
+                if (!isEmpty) break;
+            }
+
+            if (isEmpty) {
+                return new Location(world, x + 1.5, baseY, z + 1.5); // 중앙 보정
+            }
+        }
+
+        return null; // 실패 시
+    }
+
     public List<List<Monster>> getSpawnMonsters(int round) {
         int roundScore = getRoundScore(round);
 
@@ -37,7 +136,7 @@ public class MonsterService {
         return spawnMonsters;
     }
 
-    public Monster calculateRoundMonster(int round, int score) {
+    private Monster calculateRoundMonster(int round, int score) {
         Set<Monster> spawnableMonstersByRound = getSpawnableMonstersByRound(round);
 
         Set<Monster> spawnableMonstersByScore = new HashSet<>();

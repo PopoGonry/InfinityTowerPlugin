@@ -170,9 +170,9 @@ public class InfinityTowerCommand implements CommandExecutor {
 
 //                Monster monster = monsterService.calculateRoundMonster(10, 100);
 //                List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(10);
-                Monster monster = monsterService.calculateRoundMonster(10, Integer.parseInt(args[1]));
+//                Monster monster = monsterService.calculateRoundMonster(10, Integer.parseInt(args[1]));
 
-                System.out.println(monster);
+//                System.out.println(monster);
             }
 
         }
