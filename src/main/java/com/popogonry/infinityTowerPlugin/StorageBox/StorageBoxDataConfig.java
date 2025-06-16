@@ -4,6 +4,8 @@ import com.popogonry.infinityTowerPlugin.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 public class StorageBoxDataConfig extends Config {
 
     public StorageBoxDataConfig(String basePath, String fileName) {
@@ -11,20 +13,20 @@ public class StorageBoxDataConfig extends Config {
     }
 
     public void storeStorageBoxData(StorageBox storageBox) {
-        getConfig().set(String.valueOf(storageBox.getOwner().getUniqueId()), storageBox);
+        getConfig().set(String.valueOf(storageBox.getOwnerUUID()), storageBox);
         super.store();
     }
 
-    public StorageBox loadStorageBoxData(Player player) {
-        return (StorageBox) getConfig().get(String.valueOf(player.getUniqueId()));
+    public StorageBox loadStorageBoxData(UUID uuid) {
+        return (StorageBox) getConfig().get(String.valueOf(uuid));
     }
 
-    public boolean hasStorageBoxData(Player player) {
-        return getConfig().contains(String.valueOf(player.getUniqueId()));
+    public boolean hasStorageBoxData(UUID uuid) {
+        return getConfig().contains(String.valueOf(uuid));
     }
 
-    public void removeStorageBoxData(Player player) {
-        getConfig().set(String.valueOf(player.getUniqueId()), null);
+    public void removeStorageBoxData(UUID uuid) {
+        getConfig().set(String.valueOf(uuid), null);
         super.store();
     }
 

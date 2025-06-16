@@ -15,7 +15,7 @@ public class StorageBoxRepository {
     private final String configBasePath;
     private final StorageBoxDataConfig dataConfig;
 
-    private final static HashMap<Player, StorageBox> useruserStorageBoxHashMap = new HashMap<>();
+    public final static HashMap<UUID, StorageBox> userStorageBoxHashMap = new HashMap<>();
 
     public StorageBoxRepository() {
         configBasePath = InfinityTowerPlugin.getServerInstance().getDataFolder().getAbsolutePath();
@@ -30,25 +30,28 @@ public class StorageBoxRepository {
         dataConfig.store();
     }
 
-    public boolean hasStorageBox(Player player) {
-        return dataConfig.hasStorageBoxData(player);
+    public boolean hasStorageBox(UUID uuid) {
+        return dataConfig.hasStorageBoxData(uuid);
     }
 
-    public void storeStorageBox(Player player) {
-        dataConfig.storeStorageBoxData(useruserStorageBoxHashMap.get(player));
-        useruserStorageBoxHashMap.remove(player);
+    public void storeStorageBox(UUID uuid) {
+        dataConfig.storeStorageBoxData(userStorageBoxHashMap.get(uuid));
+        userStorageBoxHashMap.remove(uuid);
     }
 
-    public void saveStorageBox(Player player) {
-        dataConfig.storeStorageBoxData(useruserStorageBoxHashMap.get(player));
+    public void saveStorageBox(UUID uuid) {
+        dataConfig.storeStorageBoxData(userStorageBoxHashMap.get(uuid));
     }
 
-    public void loadStorageBox(Player player) {
-        useruserStorageBoxHashMap.put(player, dataConfig.loadStorageBoxData(player));
+    public void loadStorageBox(UUID uuid) {
+        userStorageBoxHashMap.put(uuid, dataConfig.loadStorageBoxData(uuid));
     }
 
-    public void removeStorageBox(Player player) {
-        dataConfig.removeStorageBoxData(player);
+    public void removeStorageBox(UUID uuid) {
+        dataConfig.removeStorageBoxData(uuid);
     }
+
+
+
 
 }

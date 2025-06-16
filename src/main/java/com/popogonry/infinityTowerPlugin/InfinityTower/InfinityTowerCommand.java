@@ -11,11 +11,14 @@ import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -47,26 +50,16 @@ public class InfinityTowerCommand implements CommandExecutor {
 
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("test")) {
-                UUID uuid = UUID.randomUUID();
-
-                ArrayList<Integer> list = new ArrayList<>();
-                for (int i = 1; i <= 10; i++) {
-                    list.add(i);
+                List<ItemStack> list = new ArrayList<>();
+                for (ItemStack itemStack : player.getInventory()) {
+                    if(itemStack != null && itemStack.getType() != Material.AIR) {
+                        list.add(new ItemStack(itemStack));
+                    }
                 }
-
-                for(int i = 1; i <= 5; i++) {
-                    uuid = UUID.randomUUID();
-                    MonsterRepository.monsterHashMap.put(uuid, new Monster(uuid, "name" + i, false, 30 * i, list));
-                    MonsterRepository.monsterUUIDSet.add(uuid);
-                }
+                StorageBoxRepository.userStorageBoxHashMap.put(player.getUniqueId(), new StorageBox(player.getUniqueId(), list));
 
             }if(args[0].equalsIgnoreCase("test2")) {
-                MonsterService monsterService = new MonsterService();
-
-//                Monster monster = monsterService.calculateRoundMonster(10, 100);
-                List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(10);
-
-                System.out.println(spawnMonsters);
+                player.sendMessage(String.valueOf(StorageBoxRepository.userStorageBoxHashMap.get(player.getUniqueId())));
             }
             else if(args[0].equalsIgnoreCase("load")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
@@ -77,6 +70,9 @@ public class InfinityTowerCommand implements CommandExecutor {
 
                 RewardRepository rewardRepository = new RewardRepository();
                 rewardRepository.loadAllReward();
+
+                StorageBoxRepository storageBoxRepository = new StorageBoxRepository();
+                storageBoxRepository.loadStorageBox(player.getUniqueId());
             }
             else if(args[0].equalsIgnoreCase("save")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
@@ -87,6 +83,9 @@ public class InfinityTowerCommand implements CommandExecutor {
 
                 RewardRepository rewardRepository = new RewardRepository();
                 rewardRepository.saveAllReward();
+
+                StorageBoxRepository storageBoxRepository = new StorageBoxRepository();
+                storageBoxRepository.saveStorageBox(player.getUniqueId());
             }
 //            else if(args[0].equalsIgnoreCase("store")) {
 //

@@ -5,6 +5,7 @@ import com.popogonry.infinityTowerPlugin.Area.AreaService;
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.NameNotFoundException;
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.UUIDAlreadyExistsException;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
+import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class InfinityTowerKoreanCommand implements CommandExecutor {
     AreaService areaService = new AreaService();
     InfinityTowerService infinityTowerService = new InfinityTowerService();
+    MonsterService monsterService = new MonsterService();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -59,6 +61,12 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
 
             else if(args[0].equalsIgnoreCase("목록")) {
                 infinityTowerService.printInfinityTowers(sender);
+
+                sender.sendMessage(MonsterRepository.monsterHashMap.toString());
+            }
+            else if(args[0].equalsIgnoreCase("몬스터")) {
+                monsterService.createDefaultMonster();
+                sender.sendMessage(Reference.prefix_normal + "기본 몬스터를 생성했습니다.");
             }
 
             if(sender instanceof Player) {

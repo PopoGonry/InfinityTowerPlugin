@@ -6,6 +6,7 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.*;
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -23,7 +24,7 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         serverInstance = this;
         saveDefaultConfig();
 
-
+        ConfigurationSerialization.registerClass(StorageBox.class);
         ConfigurationSerialization.registerClass(InfinityTower.class);
         ConfigurationSerialization.registerClass(Area.class);
         ConfigurationSerialization.registerClass(Monster.class);

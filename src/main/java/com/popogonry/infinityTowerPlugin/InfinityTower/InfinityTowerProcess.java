@@ -100,6 +100,7 @@ public class InfinityTowerProcess {
     }
 
     private void giveRewards() {
+
         player.sendMessage(round - 1 + " 까지의 보상 지급");
     }
 

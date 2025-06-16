@@ -18,6 +18,16 @@ public class MonsterService {
     private final Random rand = new Random();
 
 
+    public void createDefaultMonster() {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            list.add(i);
+        }
+        Monster monster = new Monster(UUID.randomUUID(), "ZOMBIE", false, 100, list);
+        MonsterRepository.monsterHashMap.put(monster.getId(), monster);
+        MonsterRepository.monsterUUIDSet.add(monster.getId());
+    }
+
     public EntityType getMonsterByName(String mobName) {
 
         EntityType type;

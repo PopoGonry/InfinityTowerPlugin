@@ -11,44 +11,43 @@ import java.util.*;
 
 public class StorageBox implements ConfigurationSerializable {
 
-    private Player owner;
+    private UUID ownerUUID;
     private final List<ItemStack> inventory;
 
-    public StorageBox(Player owner) {
-        this.owner = owner;
-        inventory = new ArrayList<>();
+    public StorageBox(UUID ownerUUID) {
+        this.ownerUUID = ownerUUID;
+        this.inventory = new ArrayList<>();
     }
 
-    public StorageBox(Player owner, List<ItemStack> inventory) {
-        this.owner = owner;
+    public StorageBox(UUID ownerUUID, List<ItemStack> inventory) {
+        this.ownerUUID = ownerUUID;
         this.inventory = inventory;
     }
 
     @Override
     public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
-        map.put("owner", owner);
+        map.put("ownerUUID", ownerUUID.toString());
         map.put("inventory", inventory);
         return map;
     }
 
     public static StorageBox deserialize(Map<String, Object> map) {
-        Player owner = Bukkit.getPlayer((UUID) map.get("owner"));
+        UUID ownerUUID = UUID.fromString((String) map.get("ownerUUID"));
         List<ItemStack> inventory = (List<ItemStack>) map.get("inventory");
-
-        return new StorageBox(owner, inventory);
+        return new StorageBox(ownerUUID, inventory);
     }
 
     public int getInventorySize() {
         return inventory.size();
     }
 
-    public Player getOwner() {
-        return owner;
+    public UUID getOwnerUUID() {
+        return ownerUUID;
     }
 
-    public void setOwner(Player owner) {
-        this.owner = owner;
+    public void setOwnerUUID(UUID ownerUUID) {
+        this.ownerUUID = ownerUUID;
     }
 
     public List<ItemStack> getInventory() {
@@ -58,8 +57,9 @@ public class StorageBox implements ConfigurationSerializable {
     @Override
     public String toString() {
         return "StorageBox{" +
-                "owner=" + owner +
+                "ownerUUID=" + ownerUUID +
                 ", inventory=" + inventory +
                 '}';
     }
 }
+
