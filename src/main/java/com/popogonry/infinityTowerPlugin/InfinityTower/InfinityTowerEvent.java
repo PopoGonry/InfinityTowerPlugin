@@ -3,10 +3,13 @@ package com.popogonry.infinityTowerPlugin.InfinityTower;
 import com.popogonry.infinityTowerPlugin.CooldownManager;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -56,6 +59,7 @@ public class InfinityTowerEvent implements Listener {
         if(InfinityTowerRepository.infinityTowerPlayerHashMap.containsKey(event.getPlayer())) {
             InfinityTowerProcess infinityTowerProcess = InfinityTowerRepository.infinityTowerPlayerHashMap.get(event.getPlayer());
             infinityTowerProcess.failRound("플레이어가 사망했습니다.");
+            event.setCancelled(true);
         }
     }
 
@@ -85,4 +89,15 @@ public class InfinityTowerEvent implements Listener {
         player.sendMessage("§c무한의 탑에서는 해당 명령어를 사용할 수 없습니다.");
     }
 
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if(event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            for (InfinityTower value : InfinityTowerRepository.infinityTowerHashMap.values()) {
+                World world = Bukkit.getWorld(value.getArea().getWorldName());
+                if (world != null && world.getName().equalsIgnoreCase(value.getArea().getWorldName())) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
 }

@@ -9,7 +9,9 @@ import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +26,14 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
+        if(sender instanceof Player) {
+            if(args.length == 1) {
+                if(args[0].equalsIgnoreCase("보상")) {
+                    StorageBoxGUI storageBoxGUI = new StorageBoxGUI();
+                    storageBoxGUI.openStorageBoxGUI(((Player) sender).getPlayer(), 1);
+                }
+            }
+        }
 
         if(!sender.isOp()) {
             sender.sendMessage(Reference.prefix_error + "op 전용 명령어입니다.");
@@ -117,6 +127,20 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                         sender.sendMessage(Reference.prefix_error + e.getMessage());
                     }
 
+                }
+                else if(args[0].equalsIgnoreCase("보상설정")) {
+                    if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+                        player.sendMessage(Reference.prefix_error + "보상을 손에 들어주세요.");
+                        return false;
+                    }
+                    try {
+                        RewardRepository.rewardsHashMap.put(Integer.valueOf(args[1]), player.getInventory().getItemInMainHand());
+                        RewardRepository.rewardsSet.add(Integer.valueOf(args[1]));
+                        player.sendMessage(Reference.prefix_normal + "정상적으로 추가되었습니다.");
+                    } catch (Exception e) {
+                        player.sendMessage(Reference.prefix_error + "명령어 실행 중 오류가 발생했습니다.");
+                        return false;
+                    }
                 }
             }
 

@@ -189,7 +189,7 @@ public class InfinityTowerService {
 
         for (Player player : list) {
             if(InfinityTowerRepository.infinityTowerPlayerHashMap.get(player).getInfinityTower().getId().equals(uuid)) {
-                InfinityTowerRepository.infinityTowerPlayerHashMap.remove(player);
+                InfinityTowerRepository.infinityTowerPlayerHashMap.get(player).stop();
                 return true;
             }
         }

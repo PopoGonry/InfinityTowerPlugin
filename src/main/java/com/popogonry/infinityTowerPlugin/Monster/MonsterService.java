@@ -182,13 +182,21 @@ public class MonsterService {
 
 
     public int getRoundScore(int round) {
-        if(round == 1) {
-            return PluginRepository.pluginConfig.getRoundScore();
+        // 캐시에 이미 존재하면 바로 반환
+        if (InfinityTowerRepository.infinityTowerRoundScoreHashMap.containsKey(round)) {
+            return InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(round);
         }
 
-        if(!InfinityTowerRepository.infinityTowerRoundScoreHashMap.containsKey(round)) {
-            int score = PluginRepository.pluginConfig.getRoundScore() * round + getRoundScore(round - 1);
-            InfinityTowerRepository.infinityTowerRoundScoreHashMap.put(round, score);
+        int baseScore = PluginRepository.pluginConfig.getRoundScore();
+        int totalScore = 0;
+
+        for (int i = 1; i <= round; i++) {
+            if (InfinityTowerRepository.infinityTowerRoundScoreHashMap.containsKey(i)) {
+                totalScore = InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(i);
+            } else {
+                totalScore = baseScore * i + totalScore;
+                InfinityTowerRepository.infinityTowerRoundScoreHashMap.put(i, totalScore);
+            }
         }
 
         return InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(round);

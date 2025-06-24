@@ -35,12 +35,12 @@ public class StorageBoxRepository {
     }
 
     public void storeStorageBox(UUID uuid) {
-        dataConfig.storeStorageBoxData(userStorageBoxHashMap.get(uuid));
+        dataConfig.storeStorageBoxData(userStorageBoxHashMap.getOrDefault(uuid, new StorageBox(uuid)));
         userStorageBoxHashMap.remove(uuid);
     }
 
     public void saveStorageBox(UUID uuid) {
-        dataConfig.storeStorageBoxData(userStorageBoxHashMap.get(uuid));
+        dataConfig.storeStorageBoxData(userStorageBoxHashMap.getOrDefault(uuid, new StorageBox(uuid)));
     }
 
     public void loadStorageBox(UUID uuid) {

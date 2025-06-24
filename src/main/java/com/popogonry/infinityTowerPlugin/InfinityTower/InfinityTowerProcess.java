@@ -8,6 +8,9 @@ import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
+import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
@@ -37,6 +40,8 @@ import java.util.List;
 public class InfinityTowerProcess {
 
     private final Player player;
+    private final StorageBox storageBox;
+
     private final InfinityTower infinityTower;
     private int round;
     private Location playerBeforeLocation;
@@ -50,6 +55,7 @@ public class InfinityTowerProcess {
 
     public InfinityTowerProcess(Player player, InfinityTower infinityTower) {
         this.player = player;
+        this.storageBox = StorageBoxRepository.userStorageBoxHashMap.getOrDefault(player.getUniqueId(), new StorageBox(player.getUniqueId()));;
         this.infinityTower = infinityTower;
         this.round = 0;
     }
@@ -58,6 +64,7 @@ public class InfinityTowerProcess {
         return InfinityTowerRepository.infinityTowerPlayerHashMap.containsKey(player);
     }
 
+
     public void start() {
         if(isWorking()) throw new PlayerInTowerException("This player is already working");
 
@@ -65,15 +72,23 @@ public class InfinityTowerProcess {
 
         round = 1;
 
-        playerBeforeLocation = player.getLocation();
+        playerBeforeLocation = player.getLocation().clone();
+
         player.teleport(new Location(Bukkit.getWorld(infinityTower.getArea().getWorldName()), infinityTower.getSpawnLocation()[0], infinityTower.getSpawnLocation()[1], infinityTower.getSpawnLocation()[2]));
+
 
         player.sendTitle("§6무한의 탑에 입장하셨습니다!", "§8도전자: " + player.getName() , 10, 40, 10);
 
-        player.sendMessage(Reference.prefix_normal + "10초 후 몬스터가 출몰합니다!");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.sendMessage(Reference.prefix_normal + "10초 후 몬스터가 출몰합니다!");
+                startTitleCountdown(10);
+            }
+        }.runTaskLater(InfinityTowerPlugin.getServerInstance(), 60L); // 40 ticks = 2 seconds
 
 
-        Bukkit.getScheduler().runTaskLater(InfinityTowerPlugin.getServerInstance(), this::infinityTowerCycle, 200L);
+        Bukkit.getScheduler().runTaskLater(InfinityTowerPlugin.getServerInstance(), this::infinityTowerCycle, 260L);
     }
 
     public void stop() {
@@ -82,13 +97,20 @@ public class InfinityTowerProcess {
         InfinityTowerRepository.infinityTowerPlayerHashMap.remove(player);
 
         removeAllRemainingMobs();
-        giveRewards();
+        player.sendMessage(Reference.prefix_normal + (round - 1) + "라운드까지의 보상이 보상함에 지급되었습니다!");
         round = 0;
-
 
         if(playerBeforeLocation != null) {
             player.teleport(playerBeforeLocation);
         }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(playerBeforeLocation != null) {
+                    player.teleport(playerBeforeLocation);
+                }
+            }
+        }.runTaskLater(InfinityTowerPlugin.getServerInstance(), 1L); // 40 ticks = 2 seconds
 
     }
 
@@ -99,9 +121,10 @@ public class InfinityTowerProcess {
         return (int) Math.max(remainingTicks / 20, 0); // 초 단위로 변환
     }
 
-    private void giveRewards() {
-
-        player.sendMessage(round - 1 + " 까지의 보상 지급");
+    private void giveRewards(int round) {
+        if(RewardRepository.rewardsHashMap.containsKey(round)) {
+            storageBox.getInventory().add(RewardRepository.rewardsHashMap.get(round));
+        }
     }
 
     private void nextRound() {
@@ -115,7 +138,7 @@ public class InfinityTowerProcess {
         player.sendTitle("§a라운드 클리어!", "§f다음 라운드 준비 중...", 10, 40, 10);
         roundEndTick = Bukkit.getCurrentTick() + (200L);
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-
+        giveRewards(round);
         nextRound();
     }
 
@@ -245,6 +268,29 @@ public class InfinityTowerProcess {
         return (spawnedMinecraftMobs == null || spawnedMinecraftMobs.stream().allMatch(Entity::isDead))
                 && (spawnedMysticMobs == null || spawnedMysticMobs.stream().allMatch(mob -> mob.getEntity() == null || mob.getEntity().isDead()));
     }
+
+    public void startTitleCountdown(int seconds) {
+        new BukkitRunnable() {
+            int count = seconds;
+
+            @Override
+            public void run() {
+                if (count <= 0) {
+                    cancel();
+                    return;
+                }
+
+                // 타이틀 표시
+                player.sendTitle("§e" + count, "", 0, 20, 0);
+
+                // 틱당 효과음
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1f, 1f);
+
+                count--;
+            }
+        }.runTaskTimer(InfinityTowerPlugin.getServerInstance(), 0L, 20L);
+    }
+
 
     private boolean isPlayerStillAlive() {
         return player.isOnline() && !player.isDead() && isWorking();

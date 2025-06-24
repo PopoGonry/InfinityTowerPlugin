@@ -1,32 +1,27 @@
 package com.popogonry.infinityTowerPlugin.InfinityTower;
 
-import com.popogonry.infinityTowerPlugin.Area.Area;
 import com.popogonry.infinityTowerPlugin.Area.AreaRepository;
 import com.popogonry.infinityTowerPlugin.Area.AreaService;
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.NameNotFoundException;
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.UUIDAlreadyExistsException;
-import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
-import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
+import com.popogonry.infinityTowerPlugin.ScoreHologram.HologramUtil;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
+import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxGUI;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class InfinityTowerCommand implements CommandExecutor {
     AreaService areaService = new AreaService();
@@ -35,31 +30,43 @@ public class InfinityTowerCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-
         if (!(sender instanceof Player)) {
             sender.sendMessage("이 명령어는 플레이어만 사용할 수 있습니다.");
             return false;
-        }
-        Player player = (Player) sender;
 
+        }
 
         if(!sender.isOp()) {
             sender.sendMessage(Reference.prefix_error + "op 전용 명령어입니다.");
             return false;
         }
 
+        Player player = (Player) sender;
+
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("test")) {
-                List<ItemStack> list = new ArrayList<>();
-                for (ItemStack itemStack : player.getInventory()) {
-                    if(itemStack != null && itemStack.getType() != Material.AIR) {
-                        list.add(new ItemStack(itemStack));
-                    }
-                }
-                StorageBoxRepository.userStorageBoxHashMap.put(player.getUniqueId(), new StorageBox(player.getUniqueId(), list));
+                HologramUtil.spawnHologram(player.getLocation(), "테스트 문장");
 
-            }if(args[0].equalsIgnoreCase("test2")) {
-                player.sendMessage(String.valueOf(StorageBoxRepository.userStorageBoxHashMap.get(player.getUniqueId())));
+            }else if(args[0].equalsIgnoreCase("test2")) {
+
+                List<String> list = new ArrayList<>();
+                list.add("---- 무한의 탑 랭킹 ( 일간 ) ----");
+                list.add("- 1. PopoGonry : 230층 -");
+                list.add("- 2. PopoGonry : 230층 -");
+                list.add("- 3. PopoGonry : 230층 -");
+                list.add("- 4. PopoGonry : 230층 -");
+                list.add("- 5. PopoGonry : 230층 -");
+                list.add("- 6. PopoGonry : 230층 -");
+                list.add("- 7. PopoGonry : 230층 -");
+                list.add("- 8. PopoGonry : 230층 -");
+                list.add("- 9. PopoGonry : 230층 -");
+
+
+                HologramUtil.spawnHologramLines(player.getLocation(), list);
+
+            } else if(args[0].equalsIgnoreCase("test3")) {
+                StorageBoxGUI storageBoxGUI = new StorageBoxGUI();
+                storageBoxGUI.openStorageBoxGUI(player, 1);
             }
             else if(args[0].equalsIgnoreCase("load")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
