@@ -1,6 +1,7 @@
 package com.popogonry.infinityTowerPlugin.StorageBox;
 
 import com.popogonry.infinityTowerPlugin.GUI;
+import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class StorageBoxGUI {
     public boolean openStorageBoxGUI(Player player, int page) {
-        Inventory inventory = Bukkit.createInventory(player, 54, Reference.prefix_normal + "Rewards");
+        Inventory inventory = Bukkit.createInventory(player, 54, PluginRepository.pluginConfig.getRewardGUIDisplayName());
 
         StorageBox storageBox = StorageBoxRepository.userStorageBoxHashMap.get(player.getUniqueId());
         List<ItemStack> itemList = new ArrayList<>(storageBox.getInventory());

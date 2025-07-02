@@ -16,7 +16,9 @@ public class PluginDataConfig extends Config {
                 this.getConfig().getInt("Round-Clear-Seconds"),
                 this.getConfig().getStringList("Allowed-Commands"),
                 this.getConfig().getInt("One-Time-Mob-Spawn-Number"),
-                this.getConfig().getInt("Mob-Spawn-Delay-Seconds")
+                this.getConfig().getInt("Mob-Spawn-Delay-Seconds"),
+                this.getConfig().getString("Reward-GUI-Display-Name"),
+                this.getConfig().getString("Tower-Ticket-Display-Name")
         );
     }
 

@@ -103,15 +103,6 @@ public class InfinityTowerProcess {
         if(playerBeforeLocation != null) {
             player.teleport(playerBeforeLocation);
         }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(playerBeforeLocation != null) {
-                    player.teleport(playerBeforeLocation);
-                }
-            }
-        }.runTaskLater(InfinityTowerPlugin.getServerInstance(), 1L); // 40 ticks = 2 seconds
-
     }
 
 
@@ -298,6 +289,10 @@ public class InfinityTowerProcess {
 
     public InfinityTower getInfinityTower() {
         return infinityTower;
+    }
+
+    public Location getPlayerBeforeLocation() {
+        return playerBeforeLocation;
     }
 }
 

@@ -4,12 +4,17 @@ import com.popogonry.infinityTowerPlugin.Area.Area;
 import com.popogonry.infinityTowerPlugin.Area.Exception.LocationOutsideAreaException;
 import com.popogonry.infinityTowerPlugin.Area.Exception.AreaNotCompleteException;
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.*;
+import com.popogonry.infinityTowerPlugin.PluginConfig;
+import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -135,8 +140,17 @@ public class InfinityTowerService {
     public ItemStack getInfinityTowerTicket() {
         ItemStack itemStack = new ItemStack(Material.PAPER);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(Reference.prefix_normal + "Infinity Tower Ticket");
-        itemStack.setItemMeta(itemMeta);
+
+        if (itemMeta != null) {
+            itemMeta.setDisplayName(PluginRepository.pluginConfig.getTowerTicketDisplayName());
+
+            // PDC에 특별한 값 저장
+            NamespacedKey key = new NamespacedKey("infinity_tower", "infinity_tower_ticket");
+            itemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
+
+            itemStack.setItemMeta(itemMeta);
+        }
+
         return itemStack;
     }
 

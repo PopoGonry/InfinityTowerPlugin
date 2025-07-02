@@ -1,5 +1,6 @@
 package com.popogonry.infinityTowerPlugin.StorageBox;
 
+import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -40,7 +41,7 @@ public class StorageBoxEvent implements Listener {
 
     @EventHandler
     public static void onClickStorageBoxGUI(InventoryClickEvent event) {
-        if(event.getView().getTitle().equalsIgnoreCase(Reference.prefix_normal + "Rewards")
+        if(event.getView().getTitle().equalsIgnoreCase(PluginRepository.pluginConfig.getRewardGUIDisplayName())
                 && event.getCurrentItem() != null
                 && event.getCurrentItem().getType() != Material.AIR) {
 

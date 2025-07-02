@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityTowerKoreanCommand implements CommandExecutor {
@@ -134,7 +135,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                         return false;
                     }
                     try {
-                        RewardRepository.rewardsHashMap.put(Integer.valueOf(args[1]), player.getInventory().getItemInMainHand());
+                        RewardRepository.rewardsHashMap.put(Integer.valueOf(args[1]), new ItemStack(player.getInventory().getItemInMainHand()));
                         RewardRepository.rewardsSet.add(Integer.valueOf(args[1]));
                         player.sendMessage(Reference.prefix_normal + "정상적으로 추가되었습니다.");
                     } catch (Exception e) {
