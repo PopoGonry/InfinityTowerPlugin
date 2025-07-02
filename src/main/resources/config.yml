@@ -1,0 +1,25 @@
+# ########################################################### #
+# Infinity Tower Plugin Developer: PopoGonry ( rhtjdsh35@gmail.com )
+# ########################################################### #
+
+# Infinity Tower Plugin Config File #
+
+# Infinity Tower
+
+
+Round-Score: 400
+
+Round-Clear-Seconds: 1800
+
+One-Time-Mob-Spawn-Number: 10
+
+Mob-Spawn-Delay-Seconds: 10
+
+Reward-GUI-Display-Name: "보상 GUI"
+
+Tower-Ticket-Display-Name: "티켓"
+
+
+Allowed-Commands:
+
+
