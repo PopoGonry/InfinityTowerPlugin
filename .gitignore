@@ -1,0 +1,40 @@
+# ------------------------------
+# Minecraft Plugin (Gradle) .gitignore
+# ------------------------------
+
+# Gradle build output
+build/
+.gradle/
+
+# Ignore all JAR files (build artifacts)
+*.jar
+
+# But keep Gradle wrapper JAR (needed for build)
+!gradle/wrapper/gradle-wrapper.jar
+
+# Java class files
+*.class
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Backup or temp files
+*.tmp
+*.bak
+*.swp
+*.swo
+*.rej
+*~
+
+# Minecraft local server testing folder (optional)
+plugins/
