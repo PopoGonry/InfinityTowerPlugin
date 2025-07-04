@@ -182,19 +182,19 @@ public class MonsterService {
 
 
     public int getRoundScore(int round) {
-        // 캐시에 이미 존재하면 바로 반환
-        if (InfinityTowerRepository.infinityTowerRoundScoreHashMap.containsKey(round)) {
-            return InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(round);
-        }
+        // 이미 계산된 값이 있으면 반환
+        Integer cached = InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(round);
+        if (cached != null) return cached;
 
         int baseScore = PluginRepository.pluginConfig.getRoundScore();
         int totalScore = 0;
 
         for (int i = 1; i <= round; i++) {
-            if (InfinityTowerRepository.infinityTowerRoundScoreHashMap.containsKey(i)) {
-                totalScore = InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(i);
+            Integer score = InfinityTowerRepository.infinityTowerRoundScoreHashMap.get(i);
+            if (score != null) {
+                totalScore = score;
             } else {
-                totalScore = baseScore * i + totalScore;
+                totalScore += baseScore * i;
                 InfinityTowerRepository.infinityTowerRoundScoreHashMap.put(i, totalScore);
             }
         }
@@ -206,6 +206,8 @@ public class MonsterService {
         Set<Monster> monsters = new HashSet<>();
         for (UUID uuid : MonsterRepository.monsterHashMap.keySet()) {
             Monster monster = MonsterRepository.monsterHashMap.get(uuid);
+            if(monster == null) continue;
+            if(monster.getRoundList() == null) continue;
             if (monster.getRoundList().contains(round)) monsters.add(monster);
         }
         return monsters;

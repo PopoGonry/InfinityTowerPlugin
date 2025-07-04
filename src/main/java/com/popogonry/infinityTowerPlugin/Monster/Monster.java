@@ -136,6 +136,4 @@ public class Monster implements ConfigurationSerializable {
     public void setRoundList(List<Integer> roundList) {
         this.roundList = roundList;
     }
-
-
 }

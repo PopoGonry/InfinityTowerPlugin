@@ -6,6 +6,8 @@ import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.NameNotFoundExc
 import com.popogonry.infinityTowerPlugin.InfinityTower.Exception.UUIDAlreadyExistsException;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
+import com.popogonry.infinityTowerPlugin.Ranking.RankingRepository;
+import com.popogonry.infinityTowerPlugin.Ranking.RankingService;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.ScoreHologram.HologramUtil;
@@ -65,8 +67,20 @@ public class InfinityTowerCommand implements CommandExecutor {
                 HologramUtil.spawnHologramLines(player.getLocation(), list);
 
             } else if(args[0].equalsIgnoreCase("test3")) {
-                StorageBoxGUI storageBoxGUI = new StorageBoxGUI();
-                storageBoxGUI.openStorageBoxGUI(player, 1);
+                RankingRepository.ranking.printRanking();
+
+
+            } else if(args[0].equalsIgnoreCase("test4")) {
+                RankingService rankingService = new RankingService();
+                rankingService.removeRanking("daily");
+            } else if(args[0].equalsIgnoreCase("test5")) {
+                RankingService rankingService = new RankingService();
+                rankingService.removeRanking("weekly");
+
+            } else if(args[0].equalsIgnoreCase("test6")) {
+                RankingService rankingService = new RankingService();
+                rankingService.removeRanking("monthly");
+
             }
             else if(args[0].equalsIgnoreCase("load")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();

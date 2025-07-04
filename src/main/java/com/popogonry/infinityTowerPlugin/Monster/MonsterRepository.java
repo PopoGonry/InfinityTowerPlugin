@@ -53,7 +53,12 @@ public class MonsterRepository {
     }
 
     public void loadMonster(UUID monsterId) {
-        monsterHashMap.put(monsterId, dataConfig.loadMonsterData(monsterId));
+        Monster monster = dataConfig.loadMonsterData(monsterId);
+        if(monster == null) {
+            monsterUUIDSet.remove(monsterId);
+            return;
+        }
+        monsterHashMap.put(monsterId, monster);
     }
 
     public void removeMonster(UUID monsterId) {
@@ -96,7 +101,9 @@ public class MonsterRepository {
 
     public void loadAllMonster() {
         loadMonsterSet();
-        for (UUID uuid : monsterUUIDSet) {
+        Set<UUID> temp = new HashSet<>(monsterUUIDSet);
+
+        for (UUID uuid : temp) {
             loadMonster(uuid);
         }
     }

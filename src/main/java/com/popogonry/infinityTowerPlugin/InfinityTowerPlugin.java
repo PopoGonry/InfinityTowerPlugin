@@ -5,13 +5,15 @@ import com.popogonry.infinityTowerPlugin.Area.AreaEvent;
 import com.popogonry.infinityTowerPlugin.InfinityTower.*;
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
+import com.popogonry.infinityTowerPlugin.Ranking.Ranking;
+import com.popogonry.infinityTowerPlugin.Ranking.RankingRepository;
+import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.ScoreHologram.ScoreHologram;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxEvent;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +34,8 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(Area.class);
         ConfigurationSerialization.registerClass(Monster.class);
         ConfigurationSerialization.registerClass(ScoreHologram.class);
+        ConfigurationSerialization.registerClass(RoundRecord.class);
+        ConfigurationSerialization.registerClass(Ranking.class);
 
         getServer().getPluginManager().registerEvents(new AreaEvent(), this);
         getServer().getPluginManager().registerEvents(new InfinityTowerEvent(), this);
@@ -57,6 +61,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             storageBoxRepository.loadStorageBox(onlinePlayer.getUniqueId());
         }
+
+        RankingRepository rankingRepository = new RankingRepository();
+        rankingRepository.loadRanking();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Load Complete!");
 
@@ -88,6 +95,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             storageBoxRepository.storeStorageBox(onlinePlayer.getUniqueId());
         }
+
+        RankingRepository rankingRepository = new RankingRepository();
+        rankingRepository.saveRanking();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Store Complete!");
 

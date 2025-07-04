@@ -7,6 +7,10 @@ import com.popogonry.infinityTowerPlugin.Monster.Exception.MonsterNotFoundExcept
 import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterService;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
+import com.popogonry.infinityTowerPlugin.Ranking.RankingService;
+import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
+import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecordRepository;
+import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecordService;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
@@ -16,24 +20,19 @@ import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.scheduler.BukkitTask;
 
 
-import java.awt.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,15 +93,51 @@ public class InfinityTowerProcess {
     public void stop() {
         if(!isWorking()) throw new TowerNotWorkingException("This player is not working");
 
-        InfinityTowerRepository.infinityTowerPlayerHashMap.remove(player);
-
         removeAllRemainingMobs();
-        player.sendMessage(Reference.prefix_normal + (round - 1) + "라운드까지의 보상이 보상함에 지급되었습니다!");
+
+        RoundRecordService roundRecordService = new RoundRecordService();
+        RankingService rankingService = new RankingService();
+
+
+        player.sendMessage(Reference.prefix_normal + round + "층에서 도전이 끝났습니다!");
+
+
+        RoundRecord record = new RoundRecord(player.getUniqueId(), player.getName(), round - 1);
+
+        if (roundRecordService.record(record, player)) {
+            player.sendMessage(Reference.prefix_normal + "신기록 달성!");
+
+            RoundRecordRepository roundRecordRepository = new RoundRecordRepository();
+            RoundRecord roundRecord = roundRecordRepository.loadRecord(player);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
+
+            player.sendMessage(Reference.prefix_normal + "신기록: " + roundRecord.getRound() + "층 / 도전시간: " + roundRecord.getClearDateTime().format(formatter));
+        }
+
+        if(rankingService.addRanking(record)) {
+            player.sendMessage(Reference.prefix_normal + "랭킹 순위권에 들어왔습니다!");
+        }
+
+        TextComponent prefix = new TextComponent(Reference.prefix_normal + (round - 1) + "층까지의 보상이 보상함에 지급되었습니다! ");
+
+        TextComponent clickable = new TextComponent(ChatColor.GOLD + "[보상함]");
+        clickable.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/무한의탑 보상"));
+        clickable.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder("클릭 시 보상함 열기").create()));
+
+
+        // 전체 메시지 조합
+        prefix.addExtra(clickable);
+
+        player.spigot().sendMessage(prefix);
+
+        InfinityTowerRepository.infinityTowerPlayerHashMap.remove(player);
         round = 0;
 
         if(playerBeforeLocation != null) {
             player.teleport(playerBeforeLocation);
         }
+
     }
 
 
@@ -147,6 +182,7 @@ public class InfinityTowerProcess {
     }
 
     private void infinityTowerCycle() {
+        if(round == 0) return;
         List<List<Monster>> spawnMonsters = monsterService.getSpawnMonsters(round);
         spawnedMinecraftMobs = new ArrayList<>();
         spawnedMysticMobs = new ArrayList<>();
@@ -213,7 +249,7 @@ public class InfinityTowerProcess {
                 }
 
                 int aliveCount = getAliveMobCount();
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§f남은 몬스터: " + aliveCount + " / 남은시간: " + getRemainingSeconds()));
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§f남은 몬스터: " + aliveCount + " / 남은시간: " + formatTime(getRemainingSeconds())));
             }
         }.runTaskTimer(InfinityTowerPlugin.getServerInstance(), 20L, 20L);
     }
@@ -293,6 +329,19 @@ public class InfinityTowerProcess {
 
     public Location getPlayerBeforeLocation() {
         return playerBeforeLocation;
+    }
+
+    public static String formatTime(int totalSeconds) {
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int seconds = totalSeconds % 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (hours > 0) sb.append(hours).append("시간 ");
+        if (minutes > 0) sb.append(minutes).append("분 ");
+        if (seconds > 0 || sb.length() == 0) sb.append(seconds).append("초");
+
+        return sb.toString().trim();
     }
 }
 
