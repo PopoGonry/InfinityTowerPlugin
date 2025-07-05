@@ -15,6 +15,7 @@ import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramService;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
@@ -116,6 +117,8 @@ public class InfinityTowerProcess {
 
         if(rankingService.addRanking(record)) {
             player.sendMessage(Reference.prefix_normal + "랭킹 순위권에 들어왔습니다!");
+            TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+            textDisplayHologramService.updateHologram();
         }
 
         TextComponent prefix = new TextComponent(Reference.prefix_normal + (round - 1) + "층까지의 보상이 보상함에 지급되었습니다! ");

@@ -9,10 +9,12 @@ import com.popogonry.infinityTowerPlugin.Ranking.Ranking;
 import com.popogonry.infinityTowerPlugin.Ranking.RankingRepository;
 import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
-import com.popogonry.infinityTowerPlugin.ScoreHologram.ScoreHologram;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxEvent;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramLocation;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramService;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
@@ -33,9 +35,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(InfinityTower.class);
         ConfigurationSerialization.registerClass(Area.class);
         ConfigurationSerialization.registerClass(Monster.class);
-        ConfigurationSerialization.registerClass(ScoreHologram.class);
         ConfigurationSerialization.registerClass(RoundRecord.class);
         ConfigurationSerialization.registerClass(Ranking.class);
+        ConfigurationSerialization.registerClass(TextDisplayHologramLocation.class);
 
         getServer().getPluginManager().registerEvents(new AreaEvent(), this);
         getServer().getPluginManager().registerEvents(new InfinityTowerEvent(), this);
@@ -43,31 +45,8 @@ public final class InfinityTowerPlugin extends JavaPlugin {
         getServer().getPluginCommand("it").setExecutor(new InfinityTowerCommand());
         getServer().getPluginCommand("무한의탑").setExecutor(new InfinityTowerKoreanCommand());
 
-        Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Load Start...");
 
-        PluginRepository pluginRepository = new PluginRepository();
-        pluginRepository.loadPluginDataConfig();
-
-        InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
-        infinityTowerRepository.loadAllInfinityTower();
-
-        RewardRepository rewardRepository = new RewardRepository();
-        rewardRepository.loadAllReward();
-
-        MonsterRepository monsterRepository = new MonsterRepository();
-        monsterRepository.loadAllMonster();
-
-        StorageBoxRepository storageBoxRepository = new StorageBoxRepository();
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            storageBoxRepository.loadStorageBox(onlinePlayer.getUniqueId());
-        }
-
-        RankingRepository rankingRepository = new RankingRepository();
-        rankingRepository.loadRanking();
-
-        Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Load Complete!");
-
-
+        PluginRepository.loadAllData();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Plugin Enabled (Developer: PopoGonry)");
     }
@@ -80,27 +59,7 @@ public final class InfinityTowerPlugin extends JavaPlugin {
             value.stop();
         }
 
-        Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Store Start...");
-
-        InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
-        infinityTowerRepository.storeAllInfinityTower();
-
-        MonsterRepository monsterRepository = new MonsterRepository();
-        monsterRepository.storeAllMonster();
-
-        RewardRepository rewardRepository = new RewardRepository();
-        rewardRepository.storeAllReward();
-
-        StorageBoxRepository storageBoxRepository = new StorageBoxRepository();
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            storageBoxRepository.storeStorageBox(onlinePlayer.getUniqueId());
-        }
-
-        RankingRepository rankingRepository = new RankingRepository();
-        rankingRepository.saveRanking();
-
-        Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Data Store Complete!");
-
+        PluginRepository.saveAllData();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Plugin Disabled (Developer: PopoGonry)");
     }

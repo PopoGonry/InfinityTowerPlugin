@@ -12,4 +12,5 @@ public class Reference {
 
     public static String prefix_exception = "§r§e「§lInfinityTower - Exception」§7 ";
 
+
 }

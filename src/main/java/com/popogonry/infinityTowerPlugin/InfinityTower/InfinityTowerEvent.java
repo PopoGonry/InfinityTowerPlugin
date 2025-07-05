@@ -1,5 +1,6 @@
 package com.popogonry.infinityTowerPlugin.InfinityTower;
 
+import com.popogonry.infinityTowerPlugin.Area.Area;
 import com.popogonry.infinityTowerPlugin.CooldownManager;
 import com.popogonry.infinityTowerPlugin.InfinityTowerPlugin;
 import com.popogonry.infinityTowerPlugin.PluginRepository;
@@ -106,15 +107,26 @@ public class InfinityTowerEvent implements Listener {
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if(event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            for (InfinityTower value : InfinityTowerRepository.infinityTowerHashMap.values()) {
-                World world = Bukkit.getWorld(value.getArea().getWorldName());
-                if (world != null && world.getName().equalsIgnoreCase(event.getLocation().getWorld().getName())) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            for (InfinityTower tower : InfinityTowerRepository.infinityTowerHashMap.values()) {
+                Area area = tower.getArea();
+
+                if (area == null || !area.isComplete()) continue;
+
+                String areaWorldName = area.getWorldName();
+                if (areaWorldName == null) continue;
+
+                World eventWorld = event.getLocation().getWorld();
+                if (eventWorld == null) continue;
+
+                if (areaWorldName.equalsIgnoreCase(eventWorld.getName())) {
                     event.setCancelled(true);
+                    break; // 하나라도 일치하면 바로 종료
                 }
             }
         }
     }
+
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {

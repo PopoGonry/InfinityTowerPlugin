@@ -15,6 +15,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.*;
 
@@ -120,10 +123,49 @@ public class InfinityTowerService {
         infinityTowerRepository.saveInfinityTower(uuid);
     }
 
+
+
     public void printInfinityTowers(CommandSender sender) {
         for (UUID uuid : InfinityTowerRepository.infinityTowerHashMap.keySet()) {
-            InfinityTower infinityTower = InfinityTowerRepository.infinityTowerHashMap.get(uuid);
-            sender.sendMessage(infinityTower.toString());
+            InfinityTower tower = InfinityTowerRepository.infinityTowerHashMap.get(uuid);
+            double[] spawnLoc = tower.getSpawnLocation();
+            Area area = tower.getArea();
+
+            sender.sendMessage("§7========== §e[무한의 탑 정보] §f" + tower.getName() + " §7==========");
+            sender.sendMessage("§6▪ UUID: §f" + tower.getId());
+            sender.sendMessage("§6▪ 이름: §f" + tower.getName());
+
+            if (area != null && area.isComplete()) {
+                double[] loc1 = area.getLocation1();
+                double[] loc2 = area.getLocation2();
+                sender.sendMessage("§6▪ 영역 월드: §f" + area.getWorldName());
+                sender.sendMessage(String.format("§6▪ 영역 시작: §fX=%.2f, Y=%.2f, Z=%.2f", loc1[0], loc1[1], loc1[2]));
+                sender.sendMessage(String.format("§6▪ 영역 끝점: §fX=%.2f, Y=%.2f, Z=%.2f", loc2[0], loc2[1], loc2[2]));
+            } else {
+                sender.sendMessage("§6▪ 영역: §c(설정되지 않음)");
+            }
+
+            if (spawnLoc != null && spawnLoc.length >= 3) {
+                String coordsText = String.format("X=%.2f, Y=%.2f, Z=%.2f", spawnLoc[0], spawnLoc[1], spawnLoc[2]);
+
+                TextComponent clickable = new TextComponent("§6▪ 스폰 좌표: §f" + coordsText);
+                clickable.setClickEvent(new ClickEvent(
+                        ClickEvent.Action.RUN_COMMAND,
+                        String.format("/tp %s %.2f %.2f %.2f",
+                                (sender instanceof Player ? sender.getName() : "@s"), // 콘솔 보호
+                                spawnLoc[0], spawnLoc[1], spawnLoc[2]
+                        )
+                ));
+                if (sender instanceof Player player) {
+                    player.spigot().sendMessage(clickable);
+                } else {
+                    sender.sendMessage("§6▪ 스폰 좌표: §f" + coordsText);
+                }
+            } else {
+                sender.sendMessage("§6▪ 스폰 좌표: §c(설정되지 않음)");
+            }
+
+            sender.sendMessage("§6▪ 활성화 여부: " + (tower.isWorking() ? "§a작동 중" : "§c비활성화"));
         }
     }
 

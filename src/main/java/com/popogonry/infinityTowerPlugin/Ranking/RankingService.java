@@ -3,6 +3,7 @@ package com.popogonry.infinityTowerPlugin.Ranking;
 import com.popogonry.infinityTowerPlugin.InfinityTowerPlugin;
 import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
 import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecordRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramService;
 import io.lumine.mythic.bukkit.utils.lib.jooq.impl.QOM;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -11,12 +12,58 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class RankingService {
+    private static final Comparator<RoundRecord> comparator = Comparator.comparingInt(RoundRecord::getRound);
+
+    public List<String> getRankingHologramLines(String type) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
+
+        List<String> returnList = new ArrayList<>();
+
+        String koreanType;
+        switch (type) {
+            case "daily":
+                koreanType = "일간";
+                break;
+            case "weekly":
+                koreanType = "주간";
+                break;
+            case "monthly":
+                koreanType = "월간";
+                break;
+            default:
+                return null;
+        }
+
+        returnList.add("========== 무한의탑 " + koreanType + " 랭킹 ==========");
+
+        PriorityQueue<RoundRecord> queue = RankingRepository.ranking.rankingHashMap.get(type);
+
+        if (queue == null || queue.isEmpty()) {
+            returnList.add(" - 랭킹 없음");
+        } else {
+            List<RoundRecord> sorted = new ArrayList<>(queue);
+            sorted.sort(comparator.reversed()); // 높은 점수 순으로 보기 좋게
+
+            int rank = 1;
+            for (RoundRecord record : sorted) {
+                returnList.add(" " + rank++ + ". " + record.getPlayerName() + " - " + record.getRound() + "층 (" + record.getClearDateTime().format(formatter) + ")");
+            }
+        }
+        returnList.add(" ");
+
+        LocalDateTime lastUpdate = RankingRepository.ranking.lastUpdateDateTimeHashMap.get(type);
+        returnList.add(" - 마지막 업데이트: " + (lastUpdate != null ? lastUpdate.format(formatter) : "알 수 없음"));
+
+        returnList.add("=================================");
+
+        return returnList;
+    }
+
+
     public boolean addRanking(RoundRecord newRecord) {
 
         boolean isRankingUpdated = false;
@@ -26,12 +73,12 @@ public class RankingService {
 
             RoundRecord playerRecord = null;
             for (RoundRecord record : queue) {
-                if(record.getPlayerUUID().equals(newRecord.getPlayerUUID())) {
+                if (record.getPlayerUUID().equals(newRecord.getPlayerUUID())) {
                     playerRecord = record;
                     break;
                 }
             }
-            if(playerRecord == null) {
+            if (playerRecord == null) {
                 if (queue.size() < 10) {
                     queue.add(newRecord);
                     RankingRepository.ranking.lastUpdateDateTimeHashMap.put(key, LocalDateTime.now());
@@ -42,8 +89,7 @@ public class RankingService {
                     RankingRepository.ranking.lastUpdateDateTimeHashMap.put(key, LocalDateTime.now());
                     isRankingUpdated = true;
                 }
-            }
-            else {
+            } else {
                 if (newRecord.getRound() > playerRecord.getRound()) {
                     queue.remove(playerRecord);
                     queue.add(newRecord);
@@ -53,7 +99,7 @@ public class RankingService {
             }
         }
 
-        if(isRankingUpdated) {
+        if (isRankingUpdated) {
             RankingRepository rankingRepository = new RankingRepository();
             rankingRepository.saveRanking();
         }
@@ -107,6 +153,8 @@ public class RankingService {
                 if (now.getDayOfMonth() == 1) {
                     removeRanking("monthly");
                 }
+                TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+                textDisplayHologramService.updateHologram();
             }
         }.runTaskTimerAsynchronously(InfinityTowerPlugin.getServerInstance(), delay, 24 * 60 * 60 * 20L); // 20L = 1초
     }

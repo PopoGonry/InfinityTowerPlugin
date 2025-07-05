@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
@@ -211,5 +212,48 @@ public class MonsterService {
             if (monster.getRoundList().contains(round)) monsters.add(monster);
         }
         return monsters;
+    }
+
+    public static void printMonsterList(CommandSender sender) {
+        if (MonsterRepository.monsterHashMap.isEmpty()) {
+            sender.sendMessage("§c⚠ 등록된 몬스터가 없습니다.");
+            return;
+        }
+
+        sender.sendMessage("§7========== §6[몬스터 목록] §7==========");
+
+        for (UUID uuid : MonsterRepository.monsterHashMap.keySet()) {
+            Monster monster = MonsterRepository.monsterHashMap.get(uuid);
+            sender.sendMessage("§6▪ 이름: §f" + monster.getName());
+            sender.sendMessage("§6▪ UUID: §7" + uuid);
+            sender.sendMessage("§6▪ 점수: §f" + monster.getScore());
+            sender.sendMessage("§6▪ 타입: " + (monster.isMysticMob() ? "§5MysticMob" : "§f일반 몬스터"));
+            sender.sendMessage("§6▪ 등장 라운드: §f" + compressForDisplay(monster.getRoundList()));
+            sender.sendMessage("§7----------------------------------");
+        }
+
+        sender.sendMessage("§7총 §e" + MonsterRepository.monsterHashMap.size() + "§7마리 등록됨.");
+    }
+
+    private static String compressForDisplay(List<Integer> roundList) {
+        if (roundList == null || roundList.isEmpty()) return "없음";
+
+        List<String> result = new ArrayList<>();
+        Collections.sort(roundList);
+
+        int start = roundList.get(0);
+        int prev = start;
+
+        for (int i = 1; i < roundList.size(); i++) {
+            int curr = roundList.get(i);
+            if (curr != prev + 1) {
+                result.add(start == prev ? String.valueOf(start) : start + "..." + prev);
+                start = curr;
+            }
+            prev = curr;
+        }
+
+        result.add(start == prev ? String.valueOf(start) : start + "..." + prev);
+        return String.join(", ", result);
     }
 }

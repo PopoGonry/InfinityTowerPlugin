@@ -10,7 +10,9 @@ import com.popogonry.infinityTowerPlugin.PluginRepository;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxGUI;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramService;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,8 +39,10 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
         }
 
         if(!sender.isOp()) {
-            sender.sendMessage(Reference.prefix_error + "op 전용 명령어입니다.");
-            return false;
+
+            sender.sendMessage(Reference.prefix_normal + "===== 무한의탑 =====");
+            sender.sendMessage(Reference.prefix_normal + "/무한의탑 보상 : 무한의탑 보상함을 엽니다.");
+            return true;
         }
 
         if(args.length == 1) {
@@ -56,6 +60,8 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 monsterRepository.loadAllMonster();
 
                 sender.sendMessage(Reference.prefix_dataLoad + "로드 완료하였습니다.");
+                return true;
+
             }
             else if(args[0].equalsIgnoreCase("세이브")) {
                 InfinityTowerRepository infinityTowerRepository = new InfinityTowerRepository();
@@ -67,17 +73,28 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 RewardRepository rewardRepository = new RewardRepository();
                 rewardRepository.saveAllReward();
                 sender.sendMessage(Reference.prefix_dataSave + "세이브 완료하였습니다.");
+                return true;
 
             }
 
             else if(args[0].equalsIgnoreCase("목록")) {
                 infinityTowerService.printInfinityTowers(sender);
 
-                sender.sendMessage(MonsterRepository.monsterHashMap.toString());
-            }
-            else if(args[0].equalsIgnoreCase("몬스터")) {
+                return true;
+
+            } else if (args[0].equalsIgnoreCase("몬스터목록")) {
+                MonsterService.printMonsterList(sender);
+                return true;
+
+            } else if (args[0].equalsIgnoreCase("랭킹목록")) {
+
+                TextDisplayHologramService.sendTextDisplayHologramLocationMap(sender);
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("몬스터생성")) {
                 monsterService.createDefaultMonster();
                 sender.sendMessage(Reference.prefix_normal + "기본 몬스터를 생성했습니다.");
+                return true;
             }
 
             if(sender instanceof Player) {
@@ -85,6 +102,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("도구")) {
                     player.getInventory().addItem(areaService.getAreaSettingTool());
                     sender.sendMessage(Reference.prefix_normal + "구역 설정 도구가 지급되었습니다.");
+                    return true;
                 }
             }
         }
@@ -92,20 +110,19 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
 
             if(sender instanceof Player) {
                 Player player = (Player) sender;
-                if (args[0].equalsIgnoreCase("구역")) {
+                if (args[0].equalsIgnoreCase("구역설정모드")) {
                     AreaService areaService = new AreaService();
 
                     if(args[1].equalsIgnoreCase("설정")) {
                         areaService.onAreaSettingMode(((Player) sender).getPlayer());
                         sender.sendMessage(Reference.prefix_normal + "구역 설정 모드가 설정 상태입니다.");
-
+                        return true;
                     }
                     else if(args[1].equalsIgnoreCase("해제")) {
                         areaService.offAreaSettingMode(((Player) sender).getPlayer());
                         sender.sendMessage(Reference.prefix_normal + "구역 설정 모드가 해제 상태입니다.");
-
+                        return true;
                     }
-
                 }
                 else if(args[0].equalsIgnoreCase("구역설정")) {
                     try {
@@ -114,6 +131,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                     } catch (NameNotFoundException e) {
                         sender.sendMessage(Reference.prefix_error + e.getMessage());
                     }
+                    return true;
                 }
                 else if(args[0].equalsIgnoreCase("스폰설정")) {
                     double[] location = new double[3];
@@ -127,7 +145,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                     } catch (NameNotFoundException e) {
                         sender.sendMessage(Reference.prefix_error + e.getMessage());
                     }
-
+                    return true;
                 }
                 else if(args[0].equalsIgnoreCase("보상설정")) {
                     if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
@@ -152,14 +170,16 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 } catch (UUIDAlreadyExistsException e) {
                     sender.sendMessage(Reference.prefix_error + e.getMessage());
                 }
+                return true;
             }
-            else if(args[0].equalsIgnoreCase("삭제")) {
+            else if(args[0].equalsIgnoreCase("제거")) {
                 try {
                     infinityTowerService.deleteInfinityTower(args[1]);
-                    sender.sendMessage(Reference.prefix_normal + "삭제 완료되었습니다.");
+                    sender.sendMessage(Reference.prefix_normal + "제거 완료되었습니다.");
                 } catch (NameNotFoundException e) {
                     sender.sendMessage(Reference.prefix_error + e.getMessage());
                 }
+                return true;
             }
             else if(args[0].equalsIgnoreCase("활성화")) {
                 try {
@@ -169,6 +189,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 } catch (Exception e) {
                     sender.sendMessage(Reference.prefix_error + e.getMessage());
                 }
+                return true;
             }
             else if(args[0].equalsIgnoreCase("비활성화")) {
                 try {
@@ -178,6 +199,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 } catch (NameNotFoundException e) {
                     sender.sendMessage(Reference.prefix_error + e.getMessage());
                 }
+                return true;
             }
             else if(args[0].equalsIgnoreCase("강제종료")) {
                 boolean process = false;
@@ -192,7 +214,7 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 } catch (Exception e) {
                     sender.sendMessage(Reference.prefix_error + e.getMessage());
                 }
-
+                return true;
             }
             else if(args[0].equalsIgnoreCase("티켓지급")) {
                 Player player = Bukkit.getPlayer(args[1]);
@@ -204,9 +226,101 @@ public class InfinityTowerKoreanCommand implements CommandExecutor {
                 else {
                     sender.sendMessage(Reference.prefix_error + "존재 하지 않는 플레이어입니다.");
                 }
+                return true;
+
+            }
+            else if(args[0].equalsIgnoreCase("랭킹제거")) {
+                try {
+                    TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+                    textDisplayHologramService.removeHologram(args[1]);
+                    sender.sendMessage(Reference.prefix_normal + args[1] + " 랭킹표 제거 완료되었습니다.");
+                } catch (Exception e) {
+                    sender.sendMessage(Reference.prefix_error + "존재하지 않는 랭킹표입니다.");
+                }
+                return true;
+            }
+        }
+        else if(args.length == 3) {
+            if(sender instanceof Player) {
+                Player player = (Player) sender;
+                if(args[0].equalsIgnoreCase("랭킹생성")) {
+                    try {
+                        TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+                        textDisplayHologramService.createHologram(args[1], player.getLocation(), args[2]);
+                        sender.sendMessage(Reference.prefix_normal + args[1] + " 랭킹표 생성 완료되었습니다.");
+                    } catch (Exception e) {
+                        sender.sendMessage(Reference.prefix_error + "이미 존재 하는 이름이거나, 타입이 잘못되었습니다.");
+                        sender.sendMessage(Reference.prefix_normal + "/무한의탑 랭킹생성 [이름] [daily/weekly/monthly]");
+                    }
+                    return true;
+                }
             }
         }
 
+        sender.sendMessage(ChatColor.WHITE + "§m                                 ");
+        sender.sendMessage(ChatColor.GREEN + "    📚 무한의탑 명령어 도움말");
+        sender.sendMessage(ChatColor.WHITE + "§m                                 ");
+
+        sender.sendMessage(ChatColor.WHITE + "▶ 일반 명령어");
+        sendCommand(sender, "/무한의탑 보상", "무한의탑 보상함을 엽니다.", ChatColor.GOLD);
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.WHITE + "▶ 무한의 탑 관련");
+        sendCommand(sender, "/무한의탑 로드", "플러그인 데이터를 불러옵니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 세이브", "플러그인 데이터를 저장합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 목록", "생성된 무한의탑 목록을 확인합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 생성 [이름]", "새 무한의탑을 생성합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 제거 [이름]", "무한의탑을 삭제합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 활성화 [이름]", "무한의탑을 활성화합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 비활성화 [이름]", "무한의탑을 비활성화합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 강제종료 [이름]", "진행 중인 무한의탑을 강제 종료합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 보상설정 [층수]", "해당 층의 보상을 손에 든 아이템으로 설정합니다.", ChatColor.GOLD);
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.WHITE + "▶ 몬스터 / 구역 설정");
+        sendCommand(sender, "/무한의탑 몬스터목록", "몬스터 목록을 확인합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 몬스터생성", "새로운 몬스터 템플릿을 생성합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 도구", "구역 설정 도구를 지급합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 구역설정모드 설정", "구역 설정 모드를 켭니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 구역설정모드 해제", "구역 설정 모드를 끕니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 구역설정 [이름]", "해당 무한의탑의 구역을 설정합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 스폰설정 [이름]", "현재 위치를 해당 탑의 스폰지점으로 설정합니다.", ChatColor.GOLD);
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.WHITE + "▶ 기타 기능");
+        sendCommand(sender, "/무한의탑 티켓지급 [플레이어]", "입장 티켓을 해당 플레이어에게 지급합니다.", ChatColor.GOLD);
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.WHITE + "▶ 랭킹 시스템");
+        sendCommand(sender, "/무한의탑 랭킹목록", "생성된 랭킹표 목록을 확인합니다.", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 랭킹생성 [이름] [주기]", "랭킹표를 생성합니다.", ChatColor.GOLD);
+        sendCommand(sender, "[주기]", "[daily / weekly / monthly]", ChatColor.GOLD);
+        sendCommand(sender, "/무한의탑 랭킹제거 [이름]", "해당 이름의 랭킹표를 제거합니다.", ChatColor.GOLD);
+
+        sender.sendMessage(ChatColor.WHITE + "§m                                 ");
+
+
+
+
         return false;
+    }
+
+    private String padRightWithKoreanAware(String text, int totalWidth) {
+        int width = 0;
+        for (char c : text.toCharArray()) {
+            width += (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.HANGUL_SYLLABLES ||
+                    Character.UnicodeBlock.of(c) == Character.UnicodeBlock.HANGUL_JAMO ||
+                    Character.UnicodeBlock.of(c) == Character.UnicodeBlock.HANGUL_COMPATIBILITY_JAMO) ? 2 : 1;
+        }
+
+        int padding = totalWidth - width;
+        if (padding <= 0) return text;
+
+        return text + " ".repeat(padding);
+    }
+
+    private void sendCommand(CommandSender sender, String command, String description, ChatColor commandColor) {
+        String padded = padRightWithKoreanAware(command, 36); // 칸 조정은 상황에 따라 늘려도 됨
+        sender.sendMessage(commandColor + " - " + padded + ChatColor.WHITE + ": " + description);
     }
 }

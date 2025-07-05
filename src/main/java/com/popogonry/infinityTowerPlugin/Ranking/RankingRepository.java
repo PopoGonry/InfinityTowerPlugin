@@ -2,14 +2,11 @@ package com.popogonry.infinityTowerPlugin.Ranking;
 
 
 import com.popogonry.infinityTowerPlugin.InfinityTowerPlugin;
-import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
-import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecordDataConfig;
-import org.bukkit.OfflinePlayer;
 
 public class RankingRepository {
 
     private final String configBasePath;
-    private static final String RECORDS_FILE_NAME = "ranking.yml";
+    private static final String FILE_NAME = "ranking.yml";
 
     private final RankingDataConfig dataConfig;
 
@@ -17,7 +14,7 @@ public class RankingRepository {
 
     public RankingRepository() {
         this.configBasePath = InfinityTowerPlugin.getServerInstance().getDataFolder().getAbsolutePath();
-        this.dataConfig = new RankingDataConfig(configBasePath, RECORDS_FILE_NAME);
+        this.dataConfig = new RankingDataConfig(configBasePath, FILE_NAME);
     }
 
     public void reloadConfig() {

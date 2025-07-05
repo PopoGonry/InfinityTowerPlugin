@@ -10,10 +10,12 @@ import com.popogonry.infinityTowerPlugin.Ranking.RankingRepository;
 import com.popogonry.infinityTowerPlugin.Ranking.RankingService;
 import com.popogonry.infinityTowerPlugin.Reference;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
-import com.popogonry.infinityTowerPlugin.ScoreHologram.HologramUtil;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxGUI;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBoxRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramLocation;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramRepository;
+import com.popogonry.infinityTowerPlugin.TextDisplayHologram.TextDisplayHologramService;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,7 +49,9 @@ public class InfinityTowerCommand implements CommandExecutor {
 
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("test")) {
-                HologramUtil.spawnHologram(player.getLocation(), "테스트 문장");
+                System.out.println(TextDisplayHologramRepository.textDisplayHologramLocationHashMap.toString());
+
+
 
             }else if(args[0].equalsIgnoreCase("test2")) {
 
@@ -64,7 +68,6 @@ public class InfinityTowerCommand implements CommandExecutor {
                 list.add("- 9. PopoGonry : 230층 -");
 
 
-                HologramUtil.spawnHologramLines(player.getLocation(), list);
 
             } else if(args[0].equalsIgnoreCase("test3")) {
                 RankingRepository.ranking.printRanking();
@@ -135,6 +138,7 @@ public class InfinityTowerCommand implements CommandExecutor {
             }
 
 
+
         }
         else if(args.length == 2) {
 
@@ -186,14 +190,18 @@ public class InfinityTowerCommand implements CommandExecutor {
                     sender.sendMessage(e.getMessage());
                 }
             }
-            if(args[0].equalsIgnoreCase("test3")) {
-                InfinityTowerProcess infinityTowerProcess = new InfinityTowerProcess(player, InfinityTowerRepository.infinityTowerHashMap.get(infinityTowerService.nameToUUID(args[1])));
-                infinityTowerProcess.start();
-
-
-                player.sendMessage(PluginRepository.pluginConfig.getAllowedCommands().toString());
+            if(args[0].equalsIgnoreCase("testh2")) {
+                TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+                textDisplayHologramService.removeHologram(args[1]);
             }
 
+
+        }
+        else if(args.length == 3) {
+            if(args[0].equalsIgnoreCase("testh")) {
+                TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+                textDisplayHologramService.createHologram(args[1], player.getLocation(), args[2]);
+            }
         }
 
 
