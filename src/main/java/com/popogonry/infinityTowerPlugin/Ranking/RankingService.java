@@ -9,59 +9,66 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class RankingService {
     private static final Comparator<RoundRecord> comparator = Comparator.comparingInt(RoundRecord::getRound);
 
-    public List<String> getRankingHologramLines(String type) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
 
-        List<String> returnList = new ArrayList<>();
 
-        String koreanType;
-        switch (type) {
-            case "daily":
-                koreanType = "일간";
-                break;
-            case "weekly":
-                koreanType = "주간";
-                break;
-            case "monthly":
-                koreanType = "월간";
-                break;
-            default:
-                return null;
-        }
+    public List<Component> getRankingHologramComponents(String type) {
+        MiniMessage mm = MiniMessage.miniMessage();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        List<Component> returnList = new ArrayList<>();
 
-        returnList.add("========== 무한의탑 " + koreanType + " 랭킹 ==========");
+        String titleLine = switch (type) {
+            case "daily" -> "<white><bold>============ <yellow>무한의탑 일간 랭킹 <white>============</bold>";
+            case "weekly" -> "<white><bold>============ <green>무한의탑 주간 랭킹 <white>============</bold>";
+            case "monthly" -> "<white><bold>============ <aqua>무한의탑 월간 랭킹 <white>============</bold>";
+            default -> null;
+        };
+        if (titleLine == null) return null;
+
+        returnList.add(mm.deserialize(titleLine));
 
         PriorityQueue<RoundRecord> queue = RankingRepository.ranking.rankingHashMap.get(type);
 
         if (queue == null || queue.isEmpty()) {
-            returnList.add(" - 랭킹 없음");
+            returnList.add(mm.deserialize("<gray> - 랭킹 없음"));
         } else {
             List<RoundRecord> sorted = new ArrayList<>(queue);
-            sorted.sort(comparator.reversed()); // 높은 점수 순으로 보기 좋게
+            sorted.sort(Comparator.comparingInt(RoundRecord::getRound).reversed());
 
             int rank = 1;
             for (RoundRecord record : sorted) {
-                returnList.add(" " + rank++ + ". " + record.getPlayerName() + " - " + record.getRound() + "층 (" + record.getClearDateTime().format(formatter) + ")");
+                String line = String.format(
+                        "<white><bold>%d.</bold> <gold><bold>%s</bold> <white>- <red><bold>%d층</bold> <gray>(%s)",
+                        rank++, record.getPlayerName(), record.getRound(), record.getClearDateTime().format(formatter)
+                );
+                returnList.add(mm.deserialize(line));
             }
         }
-        returnList.add(" ");
+
+        returnList.add(Component.empty());
 
         LocalDateTime lastUpdate = RankingRepository.ranking.lastUpdateDateTimeHashMap.get(type);
-        returnList.add(" - 마지막 업데이트: " + (lastUpdate != null ? lastUpdate.format(formatter) : "알 수 없음"));
+        String updateLine = "<white><bold>- <gray>마지막 업데이트</gray> : "
+                + (lastUpdate != null ? lastUpdate.format(formatter) : "알 수 없음") + "</bold>";
+        returnList.add(mm.deserialize(updateLine));
 
-        returnList.add("=================================");
+        returnList.add(mm.deserialize("<white>========================================="));
 
         return returnList;
     }
+
 
 
     public boolean addRanking(RoundRecord newRecord) {

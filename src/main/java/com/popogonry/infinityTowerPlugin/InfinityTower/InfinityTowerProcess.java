@@ -121,7 +121,7 @@ public class InfinityTowerProcess {
             textDisplayHologramService.updateHologram();
         }
 
-        TextComponent prefix = new TextComponent(Reference.prefix_normal + (round - 1) + "층까지의 보상이 보상함에 지급되었습니다! ");
+        TextComponent prefix = new TextComponent("§f§l< §6§l무한의 탑 §f§l>§7§r " + (round - 1) + "층까지의 보상이 보상함에 지급되었습니다! ");
 
         TextComponent clickable = new TextComponent(ChatColor.GOLD + "[보상함]");
         clickable.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/무한의탑 보상"));

@@ -25,7 +25,7 @@ public class TextDisplayHologramService {
         }
 
         RankingService rankingService = new RankingService();
-        TextDisplay textDisplay = TextDisplayHologramUtil.spawnMultilineHologram(name, location, rankingService.getRankingHologramLines(type));
+        TextDisplay textDisplay = TextDisplayHologramUtil.spawnMultilineHologram(name, location, rankingService.getRankingHologramComponents(type));
 
         TextDisplayHologramRepository.textDisplayHologramHashMap.put(name, textDisplay);
 
@@ -79,7 +79,7 @@ public class TextDisplayHologramService {
                 }
 
                 Location location = new Location(world, coords[0], coords[1], coords[2]);
-                TextDisplay textDisplay = TextDisplayHologramUtil.spawnMultilineHologram(name, location, rankingService.getRankingHologramLines(type));
+                TextDisplay textDisplay = TextDisplayHologramUtil.spawnMultilineHologram(name, location, rankingService.getRankingHologramComponents(type));
 
                 TextDisplayHologramRepository.textDisplayHologramHashMap.put(name, textDisplay);
             }

@@ -125,6 +125,51 @@ public class InfinityTowerService {
 
 
 
+//    public void printInfinityTowers(CommandSender sender) {
+//        for (UUID uuid : InfinityTowerRepository.infinityTowerHashMap.keySet()) {
+//            InfinityTower tower = InfinityTowerRepository.infinityTowerHashMap.get(uuid);
+//            double[] spawnLoc = tower.getSpawnLocation();
+//            Area area = tower.getArea();
+//
+//            sender.sendMessage("§7========== §e[무한의 탑 정보] §f" + tower.getName() + " §7==========");
+//            sender.sendMessage("§6▪ UUID: §f" + tower.getId());
+//            sender.sendMessage("§6▪ 이름: §f" + tower.getName());
+//
+//            if (area != null && area.isComplete()) {
+//                double[] loc1 = area.getLocation1();
+//                double[] loc2 = area.getLocation2();
+//                sender.sendMessage("§6▪ 영역 월드: §f" + area.getWorldName());
+//                sender.sendMessage(String.format("§6▪ 영역 시작: §fX=%.2f, Y=%.2f, Z=%.2f", loc1[0], loc1[1], loc1[2]));
+//                sender.sendMessage(String.format("§6▪ 영역 끝점: §fX=%.2f, Y=%.2f, Z=%.2f", loc2[0], loc2[1], loc2[2]));
+//            } else {
+//                sender.sendMessage("§6▪ 영역: §c(설정되지 않음)");
+//            }
+//
+//            if (spawnLoc != null && spawnLoc.length >= 3) {
+//                String coordsText = String.format("X=%.2f, Y=%.2f, Z=%.2f", spawnLoc[0], spawnLoc[1], spawnLoc[2]);
+//
+//                TextComponent clickable = new TextComponent("§6▪ 스폰 좌표: §f" + coordsText);
+//                clickable.setClickEvent(new ClickEvent(
+//                        ClickEvent.Action.RUN_COMMAND,
+//                        String.format("/tp %s %.2f %.2f %.2f",
+//                                (sender instanceof Player ? sender.getName() : "@s"), // 콘솔 보호
+//                                spawnLoc[0], spawnLoc[1], spawnLoc[2]
+//                        )
+//                ));
+//                if (sender instanceof Player player) {
+//                    player.spigot().sendMessage(clickable);
+//                } else {
+//                    sender.sendMessage("§6▪ 스폰 좌표: §f" + coordsText);
+//                }
+//            } else {
+//                sender.sendMessage("§6▪ 스폰 좌표: §c(설정되지 않음)");
+//            }
+//
+//            sender.sendMessage("§6▪ 활성화 여부: " + (tower.isWorking() ? "§a작동 중" : "§c비활성화"));
+//        }
+//    }
+
+
     public void printInfinityTowers(CommandSender sender) {
         for (UUID uuid : InfinityTowerRepository.infinityTowerHashMap.keySet()) {
             InfinityTower tower = InfinityTowerRepository.infinityTowerHashMap.get(uuid);
@@ -152,7 +197,7 @@ public class InfinityTowerService {
                 clickable.setClickEvent(new ClickEvent(
                         ClickEvent.Action.RUN_COMMAND,
                         String.format("/tp %s %.2f %.2f %.2f",
-                                (sender instanceof Player ? sender.getName() : "@s"), // 콘솔 보호
+                                (sender instanceof Player ? sender.getName() : "@s"),
                                 spawnLoc[0], spawnLoc[1], spawnLoc[2]
                         )
                 ));
@@ -166,8 +211,21 @@ public class InfinityTowerService {
             }
 
             sender.sendMessage("§6▪ 활성화 여부: " + (tower.isWorking() ? "§a작동 중" : "§c비활성화"));
+
+            // 현재 해당 탑에 있는 플레이어 목록 출력
+            List<String> playersInTower = InfinityTowerRepository.infinityTowerPlayerHashMap.entrySet().stream()
+                    .filter(entry -> entry.getValue().getInfinityTower().getId().equals(tower.getId()))
+                    .map(entry -> entry.getKey().getName())
+                    .toList();
+
+            if (!playersInTower.isEmpty()) {
+                sender.sendMessage("§6▪ 현재 입장한 플레이어: §f" + String.join(", ", playersInTower));
+            } else {
+                sender.sendMessage("§6▪ 현재 입장한 플레이어: §7없음");
+            }
         }
     }
+
 
 
     public UUID nameToUUID(String name) {
