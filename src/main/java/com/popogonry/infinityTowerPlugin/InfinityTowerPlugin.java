@@ -7,6 +7,7 @@ import com.popogonry.infinityTowerPlugin.Monster.Monster;
 import com.popogonry.infinityTowerPlugin.Monster.MonsterRepository;
 import com.popogonry.infinityTowerPlugin.Ranking.Ranking;
 import com.popogonry.infinityTowerPlugin.Ranking.RankingRepository;
+import com.popogonry.infinityTowerPlugin.Ranking.RankingService;
 import com.popogonry.infinityTowerPlugin.RoundRecord.RoundRecord;
 import com.popogonry.infinityTowerPlugin.Reward.RewardRepository;
 import com.popogonry.infinityTowerPlugin.StorageBox.StorageBox;
@@ -47,6 +48,9 @@ public final class InfinityTowerPlugin extends JavaPlugin {
 
 
         PluginRepository.loadAllData();
+
+        RankingService rankingService = new RankingService();
+        rankingService.start();
 
         Bukkit.getConsoleSender().sendMessage(Reference.prefix_normal + "InfinityTower Plugin Enabled (Developer: PopoGonry)");
     }

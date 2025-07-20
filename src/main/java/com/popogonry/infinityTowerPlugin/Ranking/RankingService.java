@@ -120,12 +120,22 @@ public class RankingService {
     }
 
     public void start() {
-        long delayTicks = getTicksUntilNextMidnight();
+        long delayTicks = getTicksUntilNextMidnight(); // 자정까지 대기 시간 계산
 
+        // 자정까지 기다린 후 실행
         new BukkitRunnable() {
             @Override
             public void run() {
-                cycle();
+                // 첫 실행
+                executeCycle();
+
+                // 이후 24시간마다 반복
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        executeCycle();
+                    }
+                }.runTaskTimerAsynchronously(InfinityTowerPlugin.getServerInstance(), 24 * 60 * 60 * 20L, 24 * 60 * 60 * 20L);
             }
         }.runTaskLater(InfinityTowerPlugin.getServerInstance(), delayTicks);
     }
@@ -133,45 +143,29 @@ public class RankingService {
     private long getTicksUntilNextMidnight() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nextMidnight = now.plusDays(1).toLocalDate().atStartOfDay();
-
-        Duration duration = Duration.between(now, nextMidnight);
-        long seconds = duration.getSeconds();
-        return seconds * 20; // 1초 = 20틱
-    }
-
-    public void cycle() {
-        long delay = getInitialDelayUntilMidnight();
-
-        // 처음엔 딜레이 후 24시간마다 반복
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                LocalDateTime now = LocalDateTime.now();
-
-                // 일간 랭킹 처리
-                removeRanking("daily");
-
-                // 주간 처리 (매주 월요일)
-                if (now.getDayOfWeek() == DayOfWeek.MONDAY) {
-                    removeRanking("weekly");
-                }
-
-                // 월간 처리 (매월 1일)
-                if (now.getDayOfMonth() == 1) {
-                    removeRanking("monthly");
-                }
-                TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
-                textDisplayHologramService.updateHologram();
-            }
-        }.runTaskTimerAsynchronously(InfinityTowerPlugin.getServerInstance(), delay, 24 * 60 * 60 * 20L); // 20L = 1초
-    }
-
-    private long getInitialDelayUntilMidnight() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime nextMidnight = now.plusDays(1).toLocalDate().atStartOfDay();
-
         Duration duration = Duration.between(now, nextMidnight);
         return duration.getSeconds() * 20L; // 초 → 틱
+    }
+
+    private void executeCycle() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 일간 랭킹 초기화
+        removeRanking("daily");
+
+        // 주간 처리 (매주 월요일)
+        if (now.getDayOfWeek() == DayOfWeek.MONDAY) {
+            removeRanking("weekly");
+        }
+
+        // 월간 처리 (매월 1일)
+        if (now.getDayOfMonth() == 1) {
+            removeRanking("monthly");
+        }
+
+        // 홀로그램 업데이트
+        TextDisplayHologramService textDisplayHologramService = new TextDisplayHologramService();
+        textDisplayHologramService.updateHologram();
     }
 
 }
